@@ -2,8 +2,10 @@ import java.awt.*;
 import javax.swing.*;
 
 public class LoginPage extends UIBase {
+    private static final String TITLE = "Automated Purchase Order Management System";
+
     public LoginPage() {
-        super("Automated Purchase Order Management System");
+        super("");
     }
 
     @Override
@@ -13,7 +15,7 @@ public class LoginPage extends UIBase {
 
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(Color.WHITE);
-        JLabel title = new JLabel("Automated Purchase Order Management System", SwingConstants.CENTER);
+        JLabel title = new JLabel(TITLE, SwingConstants.CENTER);
         title.setFont(headerFont);
         title.setForeground(primaryColor);
         JLabel subtitle = new JLabel("Login to your Account to get started or manage your inventory",
@@ -27,33 +29,22 @@ public class LoginPage extends UIBase {
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
         form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel icon = new JLabel(new ImageIcon("src/resources/user_icon.png"));
-        icon.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JTextField userField = new JTextField();
+        JTextField userField = new JTextField("Username");
         userField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         userField.setFont(inputFont);
-        userField.setText("Username");
 
-        JPasswordField passField = new JPasswordField();
+        JPasswordField passField = new JPasswordField("Password");
         passField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         passField.setFont(inputFont);
-        passField.setText("Password");
 
         JButton loginBtn = new JButton("Login");
         loginBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        loginBtn.setFont(buttonFont);
-        loginBtn.setBackground(primaryColor);
-        loginBtn.setForeground(Color.WHITE);
-        loginBtn.setFocusPainted(false);
-        loginBtn.setPreferredSize(new Dimension(0, 40));
 
-        form.add(icon);
-        form.add(Box.createRigidArea(new Dimension(0, 20)));
+        form.add(Box.createVerticalStrut(10));
         form.add(userField);
-        form.add(Box.createRigidArea(new Dimension(0, 10)));
+        form.add(Box.createVerticalStrut(10));
         form.add(passField);
-        form.add(Box.createRigidArea(new Dimension(0, 20)));
+        form.add(Box.createVerticalStrut(20));
         form.add(loginBtn);
 
         JPanel links = new JPanel();
@@ -78,6 +69,9 @@ public class LoginPage extends UIBase {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(LoginPage::new);
+        SwingUtilities.invokeLater(() -> {
+            LoginPage page = new LoginPage();
+            new WindowManager().initWindow(page, TITLE);
+        });
     }
 }
