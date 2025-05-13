@@ -4,12 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableModel;
 
-public class ManageUsersPage extends UIBase {
+public class RegisterUserPage extends UIBase {
     
-    public ManageUsersPage() {
-        super("Manage User");
+    public RegisterUserPage() {
+        super("Register User");
     }
 
     @Override
@@ -58,19 +57,19 @@ public class ManageUsersPage extends UIBase {
             public void mouseExited(MouseEvent evt) { dashboardPanel.setBackground(Color.WHITE); }
         });
         
-        // Manage User menu item (selected)
-        final JPanel manageUserPanel = new JPanel(new BorderLayout());
-        manageUserPanel.setBackground(new Color(240, 240, 240));
-        manageUserPanel.setMaximumSize(new Dimension(200, 50));
-        manageUserPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
-        manageUserPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        // Register User menu item (selected)
+        final JPanel registerUserPanel = new JPanel(new BorderLayout());
+        registerUserPanel.setBackground(new Color(240, 240, 240));
+        registerUserPanel.setMaximumSize(new Dimension(200, 50));
+        registerUserPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        registerUserPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        JLabel manageUserLabel = new JLabel("Manage User");
-        manageUserLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        manageUserPanel.add(manageUserLabel, BorderLayout.CENTER);
+        JLabel registerUserLabel = new JLabel("Register User");
+        registerUserLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        registerUserPanel.add(registerUserLabel, BorderLayout.CENTER);
         
         menuPanel.add(dashboardPanel);
-        menuPanel.add(manageUserPanel);
+        menuPanel.add(registerUserPanel);
         menuPanel.add(Box.createVerticalGlue());
         
         // Logout panel
@@ -144,7 +143,7 @@ public class ManageUsersPage extends UIBase {
             BorderFactory.createEmptyBorder(15, 20, 15, 20)
         ));
         
-        JLabel title = new JLabel("Manage User");
+        JLabel title = new JLabel("Register User");
         title.setFont(new Font("Serif", Font.BOLD, 28));
         title.setForeground(new Color(11, 61, 145));
         
@@ -157,52 +156,149 @@ public class ManageUsersPage extends UIBase {
     }
 
     private JPanel createContentPanel() {
-        JPanel contentPanel = new JPanel(new BorderLayout(0, 20));
+        JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setBackground(Color.WHITE);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(50, 150, 50, 150));
         
-        // Table panel
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.setBackground(Color.WHITE);
-        tablePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        // Form panel
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
         
-        JLabel tableInfo = new JLabel("<html><div style='text-align:center;'>Table list of users based on their roles(name, email, password)</div></html>");
-        tableInfo.setHorizontalAlignment(SwingConstants.CENTER);
-        tableInfo.setFont(new Font("Serif", Font.PLAIN, 16));
-        tableInfo.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.weightx = 0.3;
         
-        // Placeholder for actual table
-        String[] columnNames = {"Name", "Email", "Role", "Password"};
-        Object[][] data = {}; // Empty data for now
+        // User ID field
+        JLabel userIdLabel = createFormLabel("User ID");
+        JTextField userIdField = createFormTextField();
         
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
-        JTable userTable = new JTable(model);
-        userTable.setFillsViewportHeight(true);
-        userTable.setRowHeight(30);
-        userTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        JScrollPane scrollPane = new JScrollPane(userTable);
+        // Name field
+        JLabel nameLabel = createFormLabel("Name");
+        JTextField nameField = createFormTextField();
         
-        tablePanel.add(tableInfo, BorderLayout.NORTH);
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        // Email field
+        JLabel emailLabel = createFormLabel("Email");
+        JTextField emailField = createFormTextField();
+        
+        // Password field
+        JLabel passwordLabel = createFormLabel("Password");
+        JPasswordField passwordField = createFormPasswordField();
+        
+        // Role dropdown
+        JLabel roleLabel = createFormLabel("Role");
+        String[] roles = {"Select Role", "Admin", "User", "Manager", "Guest"};
+        JComboBox<String> roleComboBox = createFormComboBox(roles);
+        
+        // Add components to form
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(userIdLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 0.7;
+        formPanel.add(userIdField, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0.3;
+        formPanel.add(nameLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.weightx = 0.7;
+        formPanel.add(nameField, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0.3;
+        formPanel.add(emailLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.weightx = 0.7;
+        formPanel.add(emailField, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.weightx = 0.3;
+        formPanel.add(passwordLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.weightx = 0.7;
+        formPanel.add(passwordField, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.weightx = 0.3;
+        formPanel.add(roleLabel, gbc);
+        
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.weightx = 0.7;
+        formPanel.add(roleComboBox, gbc);
         
         // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 30));
         buttonPanel.setBackground(Color.WHITE);
         
-        JButton filterBtn = createButton("Filter by ▼", new Color(100, 100, 100));
-        JButton addBtn = createButton("Add User", new Color(100, 100, 100));
-        JButton deleteBtn = createButton("Delete User", new Color(100, 100, 100));
-        JButton editBtn = createButton("Edit User", new Color(100, 100, 100));
+        JButton registerBtn = createButton("Register", new Color(100, 100, 100));
+        JButton resetBtn = createButton("Reset", new Color(100, 100, 100));
         
-        buttonPanel.add(filterBtn);
-        buttonPanel.add(addBtn);
-        buttonPanel.add(deleteBtn);
-        buttonPanel.add(editBtn);
+        buttonPanel.add(registerBtn);
+        buttonPanel.add(resetBtn);
         
-        contentPanel.add(tablePanel, BorderLayout.CENTER);
+        contentPanel.add(formPanel, BorderLayout.CENTER);
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
         
         return contentPanel;
+    }
+    
+    private JLabel createFormLabel(String text) {
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setFont(new Font("SansSerif", Font.BOLD, 14));
+        label.setForeground(Color.WHITE);
+        label.setBackground(new Color(120, 120, 120));
+        label.setOpaque(true);
+        label.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        label.setPreferredSize(new Dimension(120, 40));
+        return label;
+    }
+    
+    private JTextField createFormTextField() {
+        JTextField field = new JTextField();
+        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        field.setPreferredSize(new Dimension(250, 40));
+        return field;
+    }
+    
+    private JPasswordField createFormPasswordField() {
+        JPasswordField field = new JPasswordField();
+        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        field.setPreferredSize(new Dimension(250, 40));
+        return field;
+    }
+    
+    private JComboBox<String> createFormComboBox(String[] items) {
+        JComboBox<String> comboBox = new JComboBox<>(items);
+        comboBox.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        comboBox.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setPreferredSize(new Dimension(250, 40));
+        return comboBox;
     }
     
     private JButton createButton(String text, Color bgColor) {
@@ -213,7 +309,7 @@ public class ManageUsersPage extends UIBase {
         button.setPreferredSize(new Dimension(120, 35));
         button.setBorder(BorderFactory.createCompoundBorder(
             new LineBorder(bgColor.darker(), 1),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(5, 15, 5, 15)
         ));
         button.setFocusPainted(false);
         button.setContentAreaFilled(true);
@@ -236,7 +332,7 @@ public class ManageUsersPage extends UIBase {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() { new ManageUsersPage(); }
+            public void run() { new RegisterUserPage(); }
         });
     }
 }
