@@ -7,9 +7,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import models.User;
+import models.Item;
 
 public class DatabaseHelper {
     private static final String USER_FILE_PATH = "src/database/user.txt";
+    private static final String ITEM_FILE_PATH = "src/database/item.txt";
     private static final String CSV_DELIMITER = ",";
 
     public List<User> getAllUsers() throws IOException {
@@ -23,6 +25,19 @@ public class DatabaseHelper {
             }
         }
         return users;
+    }
+    
+    public List<Item> getAllItems() throws IOException {
+        List<Item> items = new ArrayList<>();
+        List<String> lines = Files.readAllLines(Paths.get(ITEM_FILE_PATH));
+        
+        for (int i = 1; i < lines.size(); i++) {
+            String[] data = lines.get(i).split(CSV_DELIMITER);
+            if (data.length == 3) {
+                items.add(new Item(data[0], data[1], data[2]));
+            }
+        }
+        return items;
     }
 
     private String generateNewUserId(String rolePrefix) throws IOException {
@@ -41,6 +56,26 @@ public class DatabaseHelper {
             }
         }
         return rolePrefix + String.format("%03d", maxNum + 1);
+    }
+    
+    private String generateNewItemCode() throws IOException {
+        List<Item> items = getAllItems();
+        int maxNum = 0;
+        String prefix = "ITEM";
+        
+        for (Item item : items) {
+            if (item.getItemCode().startsWith(prefix)) {
+                try {
+                    String numPart = item.getItemCode().substring(prefix.length());
+                    int currentNum = Integer.parseInt(numPart);
+                    if (currentNum > maxNum) {
+                        maxNum = currentNum;
+                    }
+                } catch (NumberFormatException e) {
+                }
+            }
+        }
+        return prefix + String.format("%03d", maxNum + 1);
     }
 
     public void registerUser(User user) throws IOException {
@@ -75,6 +110,27 @@ public class DatabaseHelper {
             user.getEmail(),
             user.getRole());
         Files.write(Paths.get(USER_FILE_PATH), userLine.getBytes(), StandardOpenOption.APPEND);
+    }
+    
+    public void createItem(Item item) throws IOException {
+        validateItemData(item);
+        
+        if (item.getItemCode() == null || item.getItemCode().trim().isEmpty()) {
+            item.setItemCode(generateNewItemCode());
+        }
+        
+        List<Item> existingItems = getAllItems();
+        for (Item existingItem : existingItems) {
+            if (existingItem.getItemCode().equals(item.getItemCode())) {
+                throw new IllegalArgumentException("Item Code already exists");
+            }
+        }
+
+        String itemLine = String.format("%s,%s,%s%n",
+            item.getItemCode(),
+            item.getItemName(),
+            item.getSupplierId());
+        Files.write(Paths.get(ITEM_FILE_PATH), itemLine.getBytes(), StandardOpenOption.APPEND);
     }
     
     public void createUser(User user) throws IOException {
@@ -125,6 +181,30 @@ public class DatabaseHelper {
 
         Files.write(Paths.get(USER_FILE_PATH), updatedLines);
     }
+    
+    public void deleteItem(String itemCode) throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(ITEM_FILE_PATH));
+        List<String> updatedLines = new ArrayList<>();
+        boolean itemFound = false;
+
+        updatedLines.add(lines.get(0));
+        for (int i = 1; i < lines.size(); i++) {
+            String[] data = lines.get(i).split(CSV_DELIMITER);
+            if (data.length > 0 && !data[0].equals(itemCode)) {
+                updatedLines.add(lines.get(i));
+            } else if (data.length > 0 && data[0].equals(itemCode)) {
+                itemFound = true;
+            } else {
+                updatedLines.add(lines.get(i));
+            }
+        }
+
+        if (!itemFound) {
+            throw new IllegalArgumentException("Item not found: " + itemCode);
+        }
+
+        Files.write(Paths.get(ITEM_FILE_PATH), updatedLines);
+    }
 
     public User validateUser(String username, String password) throws IOException {
         List<User> users = getAllUsers();
@@ -141,6 +221,16 @@ public class DatabaseHelper {
         for (User user : users) {
             if (user.getUserId().equals(userId)) {
                 return user;
+            }
+        }
+        return null;
+    }
+    
+    public Item getItemByCode(String itemCode) throws IOException {
+        List<Item> items = getAllItems();
+        for (Item item : items) {
+            if (item.getItemCode().equals(itemCode)) {
+                return item;
             }
         }
         return null;
@@ -166,6 +256,15 @@ public class DatabaseHelper {
             throw new IllegalArgumentException("Invalid role");
         }
     }
+    
+    private void validateItemData(Item item) {
+        if (item.getItemName() == null || item.getItemName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Item name cannot be empty");
+        }
+        if (item.getSupplierId() == null || item.getSupplierId().trim().isEmpty()) {
+            throw new IllegalArgumentException("Supplier ID cannot be empty");
+        }
+    }
 
     public void updateUser(User user) throws IOException {
         validateUserData(user);
@@ -174,13 +273,12 @@ public class DatabaseHelper {
         List<String> updatedLines = new ArrayList<>();
         boolean userFound = false;
     
-        updatedLines.add(lines.get(0)); // Add header line
+        updatedLines.add(lines.get(0));
         
         for (int i = 1; i < lines.size(); i++) {
             String[] data = lines.get(i).split(CSV_DELIMITER);
             if (data.length > 0) {
                 if (data[0].equals(user.getUserId())) {
-                    // Update the user
                     String userLine = String.format("%s,%s,%s,%s,%s",
                         user.getUserId(),
                         user.getUsername(),
@@ -190,11 +288,9 @@ public class DatabaseHelper {
                     updatedLines.add(userLine);
                     userFound = true;
                 } else {
-                    // Keep other users as is
                     updatedLines.add(lines.get(i));
                 }
             } else {
-                // Add any lines without proper format
                 updatedLines.add(lines.get(i));
             }
         }
@@ -204,6 +300,40 @@ public class DatabaseHelper {
         }
     
         Files.write(Paths.get(USER_FILE_PATH), updatedLines);
+    }
+    
+    public void updateItem(Item item) throws IOException {
+        validateItemData(item);
+        
+        List<String> lines = Files.readAllLines(Paths.get(ITEM_FILE_PATH));
+        List<String> updatedLines = new ArrayList<>();
+        boolean itemFound = false;
+    
+        updatedLines.add(lines.get(0));
+        
+        for (int i = 1; i < lines.size(); i++) {
+            String[] data = lines.get(i).split(CSV_DELIMITER);
+            if (data.length > 0) {
+                if (data[0].equals(item.getItemCode())) {
+                    String itemLine = String.format("%s,%s,%s",
+                        item.getItemCode(),
+                        item.getItemName(),
+                        item.getSupplierId());
+                    updatedLines.add(itemLine);
+                    itemFound = true;
+                } else {
+                    updatedLines.add(lines.get(i));
+                }
+            } else {
+                updatedLines.add(lines.get(i));
+            }
+        }
+    
+        if (!itemFound) {
+            throw new IllegalArgumentException("Item not found: " + item.getItemCode());
+        }
+    
+        Files.write(Paths.get(ITEM_FILE_PATH), updatedLines);
     }
 
     private boolean isValidRole(String role) {

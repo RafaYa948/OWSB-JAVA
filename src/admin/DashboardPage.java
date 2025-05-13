@@ -161,10 +161,7 @@ public class DashboardPage extends UIBase {
                 );
                 
                 if (response == JOptionPane.YES_OPTION) {
-                    dispose(); // Close the current window
-                    
-                    // Just exit the application for now
-                    // In a real application, you might restart the login flow
+                    dispose();
                     System.exit(0);
                 }
             }
@@ -189,7 +186,6 @@ public class DashboardPage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
         
-        // Use the actual username if available, otherwise use default
         String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
                            ? currentUser.getUsername()
                            : "Username user";
@@ -250,8 +246,17 @@ public class DashboardPage extends UIBase {
                 card.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        // Navigate to Manage Users page
                         navigateToManageUsers();
+                    }
+                });
+            }
+            
+            // Add click handler for Manage Items
+            if (i == 1) {
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        navigateToManageItems();
                     }
                 });
             }
@@ -292,16 +297,25 @@ public class DashboardPage extends UIBase {
     }
     
     private void navigateToManageUsers() {
-        // Hide current dashboard
         setVisible(false);
         
-        // Open the Manage Users page and pass the current user
         SwingUtilities.invokeLater(() -> {
             ManageUsersPage manageUsersPage = new ManageUsersPage(currentUser);
             manageUsersPage.setVisible(true);
         });
         
-        dispose(); // Close dashboard after navigating
+        dispose();
+    }
+    
+    private void navigateToManageItems() {
+        setVisible(false);
+        
+        SwingUtilities.invokeLater(() -> {
+            ManageItemsPage manageItemsPage = new ManageItemsPage(currentUser);
+            manageItemsPage.setVisible(true);
+        });
+        
+        dispose();
     }
     
     private JPanel createCard(final String text) {
