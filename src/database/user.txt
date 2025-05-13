@@ -5,3 +5,4 @@ PUR001,Zahra,Zahra@123#,zahra@owsb.com,PUR
 FIN001,Gaspar,Gaspar@123#,gaspar@owsb.com,FIN
 SAL001,Sharon,Sharon@123#,sharon@owsb.com,SAL
 INV002,dasdasd,Azarali101!,azarmisan@gmail.com,INV
+SAL002,Rafaya,Hydra720!,rafaislam@gmail.com,SAL
