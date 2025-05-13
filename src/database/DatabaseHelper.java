@@ -167,6 +167,45 @@ public class DatabaseHelper {
         }
     }
 
+    public void updateUser(User user) throws IOException {
+        validateUserData(user);
+        
+        List<String> lines = Files.readAllLines(Paths.get(USER_FILE_PATH));
+        List<String> updatedLines = new ArrayList<>();
+        boolean userFound = false;
+    
+        updatedLines.add(lines.get(0)); // Add header line
+        
+        for (int i = 1; i < lines.size(); i++) {
+            String[] data = lines.get(i).split(CSV_DELIMITER);
+            if (data.length > 0) {
+                if (data[0].equals(user.getUserId())) {
+                    // Update the user
+                    String userLine = String.format("%s,%s,%s,%s,%s",
+                        user.getUserId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getEmail(),
+                        user.getRole());
+                    updatedLines.add(userLine);
+                    userFound = true;
+                } else {
+                    // Keep other users as is
+                    updatedLines.add(lines.get(i));
+                }
+            } else {
+                // Add any lines without proper format
+                updatedLines.add(lines.get(i));
+            }
+        }
+    
+        if (!userFound) {
+            throw new IllegalArgumentException("User not found: " + user.getUserId());
+        }
+    
+        Files.write(Paths.get(USER_FILE_PATH), updatedLines);
+    }
+
     private boolean isValidRole(String role) {
         return role.equals(User.ROLE_INVENTORY_MANAGER) ||
                role.equals(User.ROLE_PURCHASE_MANAGER) ||
