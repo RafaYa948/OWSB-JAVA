@@ -45,7 +45,19 @@ public class User {
     }
 
     public void setPassword(String password) {
+        if (!isValidPassword(password)) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one number and one special character");
+        }
         this.password = password;
+    }
+
+    private boolean isValidPassword(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        boolean hasNumber = password.matches(".*\\d.*");
+        boolean hasSpecial = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':"\\\\|,.<>/?].*");
+        return hasNumber && hasSpecial;
     }
 
     public String getConfirmPassword() {
