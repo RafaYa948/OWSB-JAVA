@@ -138,12 +138,12 @@ public class DashboardPage extends UIBase {
         logoutPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         
         final JButton logoutBtn = new JButton("Logout");
-        logoutBtn.setBackground(new Color(11, 61, 145));
+        logoutBtn.setBackground(new Color(120, 120, 120));
         logoutBtn.setForeground(Color.WHITE);
         logoutBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
         logoutBtn.setPreferredSize(new Dimension(120, 35));
         logoutBtn.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(new Color(11, 61, 145), 1),
+            new LineBorder(new Color(120, 120, 120), 1),
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         logoutBtn.setFocusPainted(false);
@@ -243,7 +243,20 @@ public class DashboardPage extends UIBase {
         for (int i = 0; i < topRowCards.length; i++) {
             gbc.gridx = i;
             gbc.gridy = 0;
-            content.add(createCard(topRowCards[i]), gbc);
+            JPanel card = createCard(topRowCards[i]);
+            
+            // Add click handler for Manage Users
+            if (i == 0) {
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // Navigate to Manage Users page
+                        navigateToManageUsers();
+                    }
+                });
+            }
+            
+            content.add(card, gbc);
         }
         
         String[] bottomRowCards = {
@@ -276,6 +289,19 @@ public class DashboardPage extends UIBase {
         
         contentWrapper.add(content, BorderLayout.CENTER);
         return contentWrapper;
+    }
+    
+    private void navigateToManageUsers() {
+        // Hide current dashboard
+        setVisible(false);
+        
+        // Open the Manage Users page and pass the current user
+        SwingUtilities.invokeLater(() -> {
+            ManageUsersPage manageUsersPage = new ManageUsersPage(currentUser);
+            manageUsersPage.setVisible(true);
+        });
+        
+        dispose(); // Close dashboard after navigating
     }
     
     private JPanel createCard(final String text) {

@@ -198,15 +198,39 @@ public class LoginPage extends UIBase {
                     if (User.ROLE_ADMINISTRATOR.equals(user.getRole())) {
                         dispose(); // Close the login page
                         SwingUtilities.invokeLater(() -> {
-                            new DashboardPage(); // Open the admin dashboard
+                            DashboardPage dashboard = new DashboardPage(user); // Pass the user object
+                            dashboard.setVisible(true);
                         });
-                    } else {
-                        // For other roles - show a success message for now
+                    } else if (User.ROLE_INVENTORY_MANAGER.equals(user.getRole())) {
+                        // Inventory Manager dashboard would go here
                         JOptionPane.showMessageDialog(this,
-                                "Welcome " + user.getUsername() + "!\nRole: " + user.getRole(),
+                                "Welcome " + user.getUsername() + "!\nRole: Inventory Manager\nThis dashboard is not yet implemented.",
                                 "Login Success",
                                 JOptionPane.INFORMATION_MESSAGE);
-                        // Here you would navigate to other role-specific dashboards
+                    } else if (User.ROLE_PURCHASE_MANAGER.equals(user.getRole())) {
+                        // Purchase Manager dashboard would go here
+                        JOptionPane.showMessageDialog(this,
+                                "Welcome " + user.getUsername() + "!\nRole: Purchase Manager\nThis dashboard is not yet implemented.",
+                                "Login Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else if (User.ROLE_FINANCE_MANAGER.equals(user.getRole())) {
+                        // Finance Manager dashboard would go here
+                        JOptionPane.showMessageDialog(this,
+                                "Welcome " + user.getUsername() + "!\nRole: Finance Manager\nThis dashboard is not yet implemented.",
+                                "Login Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else if (User.ROLE_SALES_MANAGER.equals(user.getRole())) {
+                        // Sales Manager dashboard would go here
+                        JOptionPane.showMessageDialog(this,
+                                "Welcome " + user.getUsername() + "!\nRole: Sales Manager\nThis dashboard is not yet implemented.",
+                                "Login Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        // Unknown role
+                        JOptionPane.showMessageDialog(this,
+                                "Welcome " + user.getUsername() + "!\nRole: " + user.getRole() + "\nThis role does not have a dashboard yet.",
+                                "Login Success",
+                                JOptionPane.INFORMATION_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(this,
