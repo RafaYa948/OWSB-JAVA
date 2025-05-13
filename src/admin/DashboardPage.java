@@ -260,6 +260,15 @@ public class DashboardPage extends UIBase {
                     }
                 });
             }
+
+            if (i == 2) { 
+            card.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    navigateToPurchaseRequisitions();
+                }
+            });
+        }
             
             content.add(card, gbc);
         }
@@ -313,6 +322,17 @@ public class DashboardPage extends UIBase {
         SwingUtilities.invokeLater(() -> {
             ManageItemsPage manageItemsPage = new ManageItemsPage(currentUser);
             manageItemsPage.setVisible(true);
+        });
+        
+        dispose();
+    }
+
+    private void navigateToPurchaseRequisitions() {
+        setVisible(false);
+        
+        SwingUtilities.invokeLater(() -> {
+            PurchaseRequisitionsPage requisitionsPage = new PurchaseRequisitionsPage(currentUser);
+            requisitionsPage.setVisible(true);
         });
         
         dispose();
