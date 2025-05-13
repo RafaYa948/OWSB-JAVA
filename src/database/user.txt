@@ -1,6 +1,8 @@
 userId,username,password,email,role
-ADMN001,admin,admin123,admin@owsb.com,ADMN
-INV001,Hamza,rafaaa,hamza@owsb.com,INV
-PUR001,Zahra,pass123,zahra@owsb.com,PUR
-FIN001,Gaspar,123456,gaspar@owsb.com,FIN
-SAL001,Sharon,pass123,sharon@owsb.com,SAL
+ADMN001,admin,Admin@123#,admin@owsb.com,ADMN
+INV001,Hamza,Hamza@123#,hamza@owsb.com,INV
+PUR001,Zahra,Zahra@123#,zahra@owsb.com,PUR
+FIN001,Gaspar,Gaspar@123#,gaspar@owsb.com,FIN
+SAL001,Sharon,Sharon@123#,sharon@owsb.com,SAL
+INV002,dasdasd,Azarali101!,azarmisan@gmail.com,INV
+SAL002,Rafaya,Hydra720!,rafaislam@gmail.com,SAL

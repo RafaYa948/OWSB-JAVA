@@ -1,9 +1,12 @@
 package database;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 import models.User;
-import java.io.*;
-import java.util.*;
-import java.nio.file.*;
 
 public class DatabaseHelper {
     private static final String USER_FILE_PATH = "src/database/user.txt";
@@ -22,6 +25,58 @@ public class DatabaseHelper {
         return users;
     }
 
+    private String generateNewUserId(String rolePrefix) throws IOException {
+        List<User> users = getAllUsers();
+        int maxNum = 0;
+        for (User user : users) {
+            if (user.getUserId().startsWith(rolePrefix)) {
+                try {
+                    String numPart = user.getUserId().substring(rolePrefix.length());
+                    int currentNum = Integer.parseInt(numPart);
+                    if (currentNum > maxNum) {
+                        maxNum = currentNum;
+                    }
+                } catch (NumberFormatException e) {
+                }
+            }
+        }
+        return rolePrefix + String.format("%03d", maxNum + 1);
+    }
+
+    public void registerUser(User user) throws IOException {
+        if (!user.validatePassword()) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        String rolePrefix = user.getRole();
+        if (rolePrefix == null || rolePrefix.trim().isEmpty()) {
+            throw new IllegalArgumentException("Role cannot be empty for User ID generation.");
+        }
+        
+        String newUserId = generateNewUserId(rolePrefix);
+        user.setUserId(newUserId);
+
+        validateUserData(user); 
+
+        List<User> existingUsers = getAllUsers();
+        for (User existingUser : existingUsers) {
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                throw new IllegalArgumentException("Username already exists");
+            }
+            if (existingUser.getEmail().equals(user.getEmail())) {
+                throw new IllegalArgumentException("Email already exists");
+            }
+        }
+
+        String userLine = String.format("%s,%s,%s,%s,%s%n",
+            user.getUserId(),
+            user.getUsername(),
+            user.getPassword(),
+            user.getEmail(),
+            user.getRole());
+        Files.write(Paths.get(USER_FILE_PATH), userLine.getBytes(), StandardOpenOption.APPEND);
+    }
+    
     public void createUser(User user) throws IOException {
         validateUserData(user);
         
@@ -32,6 +87,9 @@ public class DatabaseHelper {
             }
             if (existingUser.getUsername().equals(user.getUsername())) {
                 throw new IllegalArgumentException("Username already exists");
+            }
+             if (existingUser.getEmail().equals(user.getEmail())) {
+                throw new IllegalArgumentException("Email already exists");
             }
         }
 
@@ -52,15 +110,17 @@ public class DatabaseHelper {
         updatedLines.add(lines.get(0));
         for (int i = 1; i < lines.size(); i++) {
             String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (!data[0].equals(userId)) {
+            if (data.length > 0 && !data[0].equals(userId)) {
                 updatedLines.add(lines.get(i));
-            } else {
+            } else if (data.length > 0 && data[0].equals(userId)) {
                 userFound = true;
+            } else {
+                 updatedLines.add(lines.get(i));
             }
         }
 
         if (!userFound) {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("User not found: " + userId);
         }
 
         Files.write(Paths.get(USER_FILE_PATH), updatedLines);
@@ -96,6 +156,9 @@ public class DatabaseHelper {
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be empty");
         }
+         if (!user.isValidPassword(user.getPassword())) { 
+             throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one number and one special character");
+         }
         if (user.getEmail() == null || !user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new IllegalArgumentException("Invalid email format");
         }
