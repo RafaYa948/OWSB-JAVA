@@ -46,17 +46,17 @@ public class User {
 
     public void setPassword(String password) {
         if (!isValidPassword(password)) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one number and one special character");
+            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one number and one special character.");
         }
         this.password = password;
     }
 
-    private boolean isValidPassword(String password) {
+    public boolean isValidPassword(String password) {
         if (password == null || password.length() < 8) {
             return false;
         }
         boolean hasNumber = password.matches(".*\\d.*");
-        boolean hasSpecial = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':"\\\\|,.<>/?].*");
+        boolean hasSpecial = password.matches(".*[^A-Za-z0-9].*"); // Simplified regex
         return hasNumber && hasSpecial;
     }
 
@@ -74,7 +74,7 @@ public class User {
 
     public void setEmail(String email) {
         if (email == null || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Invalid email format");
+            throw new IllegalArgumentException("Invalid email format.");
         }
         this.email = email;
     }
@@ -91,7 +91,7 @@ public class User {
             role.equals(ROLE_ADMINISTRATOR)) {
             this.role = role;
         } else {
-            throw new IllegalArgumentException("Invalid role");
+            throw new IllegalArgumentException("Invalid role: " + role);
         }
     }
 
