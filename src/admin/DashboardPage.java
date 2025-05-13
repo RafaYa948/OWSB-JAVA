@@ -11,12 +11,14 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -25,16 +27,26 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import models.User;
+
 public class DashboardPage extends UIBase {
+    
+    private User currentUser;
     
     public DashboardPage() {
         super("Admin Dashboard");
+    }
+    
+    public DashboardPage(User user) {
+        super("Admin Dashboard");
+        this.currentUser = user;
     }
 
     @Override
@@ -62,11 +74,34 @@ public class DashboardPage extends UIBase {
         
         JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(Color.WHITE);
-        logoPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        JLabel logoLabel = new JLabel(new ImageIcon("logo.png"), SwingConstants.CENTER);
-        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logoPanel.add(logoLabel, BorderLayout.CENTER);
+        try {
+            File logoFile = new File("src/admin/icon.png");
+            if (logoFile.exists()) {
+                ImageIcon originalIcon = new ImageIcon(logoFile.getAbsolutePath());
+                Image image = originalIcon.getImage();
+                Image scaledImage = image.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                
+                JLabel logoLabel = new JLabel(scaledIcon, SwingConstants.CENTER);
+                logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                logoPanel.add(logoLabel, BorderLayout.CENTER);
+            } else {
+                JLabel placeholder = new JLabel("Our System Logo", SwingConstants.CENTER);
+                placeholder.setFont(new Font("Serif", Font.BOLD, 16));
+                placeholder.setForeground(new Color(11, 61, 145));
+                placeholder.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+                logoPanel.add(placeholder, BorderLayout.CENTER);
+            }
+        } catch (Exception e) {
+            JLabel placeholder = new JLabel("Our System Logo", SwingConstants.CENTER);
+            placeholder.setFont(new Font("Serif", Font.BOLD, 16));
+            placeholder.setForeground(new Color(11, 61, 145));
+            placeholder.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+            logoPanel.add(placeholder, BorderLayout.CENTER);
+        }
+        
         navPanel.add(logoPanel, BorderLayout.NORTH);
         
         JPanel menuPanel = new JPanel();
@@ -99,43 +134,39 @@ public class DashboardPage extends UIBase {
         navPanel.add(menuPanel, BorderLayout.CENTER);
         
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        logoutPanel.setBackground(new Color(100, 100, 100));
+        logoutPanel.setBackground(Color.WHITE);
         logoutPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         
         final JButton logoutBtn = new JButton("Logout");
-        logoutBtn.setBackground(new Color(120, 120, 120));
+        logoutBtn.setBackground(new Color(11, 61, 145));
         logoutBtn.setForeground(Color.WHITE);
         logoutBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        logoutBtn.setPreferredSize(new Dimension(150, 35));
+        logoutBtn.setPreferredSize(new Dimension(120, 35));
         logoutBtn.setBorder(BorderFactory.createCompoundBorder(
-            new LineBorder(new Color(100, 100, 100), 1),
-            BorderFactory.createEmptyBorder(5, 15, 5, 15)
+            new LineBorder(new Color(11, 61, 145), 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         logoutBtn.setFocusPainted(false);
-        logoutBtn.setContentAreaFilled(true);
         logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
-        logoutBtn.setUI(new BasicButtonUI() {
-            @Override
-            public void paint(Graphics g, JComponent c) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                int width = c.getWidth();
-                int height = c.getHeight();
-                
-                g2.setColor(logoutBtn.getBackground());
-                g2.fillRoundRect(0, 0, width, height, 8, 8);
-                
-                super.paint(g2, c);
-                g2.dispose();
-            }
-        });
         
         logoutBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                int response = JOptionPane.showConfirmDialog(
+                    DashboardPage.this,
+                    "Are you sure you want to log out?",
+                    "Logout Confirmation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+                );
+                
+                if (response == JOptionPane.YES_OPTION) {
+                    dispose(); // Close the current window
+                    
+                    // Just exit the application for now
+                    // In a real application, you might restart the login flow
+                    System.exit(0);
+                }
             }
         });
         
@@ -158,14 +189,19 @@ public class DashboardPage extends UIBase {
         bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
         
-        JLabel userLabel = new JLabel("Username user ▾");
+        // Use the actual username if available, otherwise use default
+        String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
+                           ? currentUser.getUsername()
+                           : "Username user";
+        
+        JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
         
         topContainer.add(userPanel, BorderLayout.NORTH);
         
-        JPanel headerPanel = new JPanel(new BorderLayout(20, 0));
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
@@ -176,17 +212,13 @@ public class DashboardPage extends UIBase {
         title.setFont(new Font("Serif", Font.BOLD, 28));
         title.setForeground(new Color(11, 61, 145));
         
-        JLabel subtitle = new JLabel("Inventory Overview");
-        subtitle.setFont(new Font("Serif", Font.PLAIN, 18));
-        subtitle.setHorizontalAlignment(SwingConstants.RIGHT);
-        
-        headerPanel.add(title, BorderLayout.WEST);
-        headerPanel.add(subtitle, BorderLayout.EAST);
+        headerPanel.add(title);
         
         topContainer.add(headerPanel, BorderLayout.SOUTH);
         
         return topContainer;
     }
+
     private JPanel createContentPanel() {
         JPanel contentWrapper = new JPanel(new BorderLayout());
         contentWrapper.setBackground(Color.WHITE);

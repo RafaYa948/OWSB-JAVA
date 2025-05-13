@@ -1,3 +1,4 @@
+import admin.DashboardPage;
 import database.DatabaseHelper;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -193,10 +194,20 @@ public class LoginPage extends UIBase {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 User user = dbHelper.validateUser(username, password);
                 if (user != null) {
-                    JOptionPane.showMessageDialog(this,
-                            "Welcome " + user.getUsername() + "!\nRole: " + user.getRole(),
-                            "Login Success",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    // Open appropriate dashboard based on user role
+                    if (User.ROLE_ADMINISTRATOR.equals(user.getRole())) {
+                        dispose(); // Close the login page
+                        SwingUtilities.invokeLater(() -> {
+                            new DashboardPage(); // Open the admin dashboard
+                        });
+                    } else {
+                        // For other roles - show a success message for now
+                        JOptionPane.showMessageDialog(this,
+                                "Welcome " + user.getUsername() + "!\nRole: " + user.getRole(),
+                                "Login Success",
+                                JOptionPane.INFORMATION_MESSAGE);
+                        // Here you would navigate to other role-specific dashboards
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "Invalid username or password.",
