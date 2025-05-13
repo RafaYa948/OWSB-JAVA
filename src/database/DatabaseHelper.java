@@ -1,541 +1,607 @@
 package database;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import models.User;
 import models.Item;
+import models.PurchaseOrder;
 import models.PurchaseRequisition;
+import models.User;
 
 public class DatabaseHelper {
-    private static final String USER_FILE_PATH = "src/database/user.txt";
-    private static final String ITEM_FILE_PATH = "src/database/item.txt";
-    private static final String PURCHASE_REQUISITION_FILE_PATH = "src/database/purchase_requisition.txt";
-    private static final String CSV_DELIMITER = ",";
+    private static final String USERS_FILE = "src/database/user.txt";
+    private static final String ITEMS_FILE = "src/database/item.txt";
+    private static final String REQUISITIONS_FILE = "src/database/purchase_requisition.txt";
+    private static final String PURCHASE_ORDERS_FILE = "src/database/purchase_order.txt";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    // USER METHODS
+    
+    public DatabaseHelper() {
+        createDataDirectoryIfNeeded();
+    }
+    
+    private void createDataDirectoryIfNeeded() {
+        File dataDir = new File("data");
+        if (!dataDir.exists()) {
+            dataDir.mkdir();
+        }
+    }
     
     public List<User> getAllUsers() throws IOException {
         List<User> users = new ArrayList<>();
-        List<String> lines = Files.readAllLines(Paths.get(USER_FILE_PATH));
+        File file = new File(USERS_FILE);
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length == 5) {
-                users.add(new User(data[0], data[1], data[2], data[3], data[4]));
-            }
+        if (!file.exists()) {
+            return users;
         }
-        return users;
-    }
-
-    private String generateNewUserId(String rolePrefix) throws IOException {
-        List<User> users = getAllUsers();
-        int maxNum = 0;
-        for (User user : users) {
-            if (user.getUserId().startsWith(rolePrefix)) {
-                try {
-                    String numPart = user.getUserId().substring(rolePrefix.length());
-                    int currentNum = Integer.parseInt(numPart);
-                    if (currentNum > maxNum) {
-                        maxNum = currentNum;
-                    }
-                } catch (NumberFormatException e) {
-                    // Ignore if the ID doesn't follow the expected format
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+            
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+                
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    String userId = parts[0];
+                    String username = parts[1];
+                    String password = parts[2];
+                    String email = parts[3];
+                    String role = parts[4];
+                    
+                    User user = new User(userId, username, password, email, role);
+                    users.add(user);
                 }
             }
         }
-        return rolePrefix + String.format("%03d", maxNum + 1);
-    }
-
-    public void registerUser(User user) throws IOException {
-        if (!user.validatePassword()) {
-            throw new IllegalArgumentException("Passwords do not match.");
-        }
-
-        String rolePrefix = user.getRole();
-        if (rolePrefix == null || rolePrefix.trim().isEmpty()) {
-            throw new IllegalArgumentException("Role cannot be empty for User ID generation.");
-        }
         
-        String newUserId = generateNewUserId(rolePrefix);
-        user.setUserId(newUserId);
-
-        validateUserData(user); 
-
-        List<User> existingUsers = getAllUsers();
-        for (User existingUser : existingUsers) {
-            if (existingUser.getUsername().equals(user.getUsername())) {
-                throw new IllegalArgumentException("Username already exists");
-            }
-            if (existingUser.getEmail().equals(user.getEmail())) {
-                throw new IllegalArgumentException("Email already exists");
-            }
-        }
-
-        String userLine = String.format("%s,%s,%s,%s,%s%n",
-            user.getUserId(),
-            user.getUsername(),
-            user.getPassword(),
-            user.getEmail(),
-            user.getRole());
-        Files.write(Paths.get(USER_FILE_PATH), userLine.getBytes(), StandardOpenOption.APPEND);
+        return users;
     }
     
-    public void createUser(User user) throws IOException {
-        validateUserData(user);
-        
-        List<User> existingUsers = getAllUsers();
-        for (User existingUser : existingUsers) {
-            if (existingUser.getUserId().equals(user.getUserId())) {
-                throw new IllegalArgumentException("User ID already exists");
-            }
-            if (existingUser.getUsername().equals(user.getUsername())) {
-                throw new IllegalArgumentException("Username already exists");
-            }
-             if (existingUser.getEmail().equals(user.getEmail())) {
-                throw new IllegalArgumentException("Email already exists");
-            }
-        }
-
-        String userLine = String.format("%s,%s,%s,%s,%s%n",
-            user.getUserId(),
-            user.getUsername(),
-            user.getPassword(),
-            user.getEmail(),
-            user.getRole());
-        Files.write(Paths.get(USER_FILE_PATH), userLine.getBytes(), StandardOpenOption.APPEND);
-    }
-
-    public void deleteUser(String userId) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(USER_FILE_PATH));
-        List<String> updatedLines = new ArrayList<>();
-        boolean userFound = false;
-
-        updatedLines.add(lines.get(0));
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length > 0 && !data[0].equals(userId)) {
-                updatedLines.add(lines.get(i));
-            } else if (data.length > 0 && data[0].equals(userId)) {
-                userFound = true;
-            } else {
-                 updatedLines.add(lines.get(i));
-            }
-        }
-
-        if (!userFound) {
-            throw new IllegalArgumentException("User not found: " + userId);
-        }
-
-        Files.write(Paths.get(USER_FILE_PATH), updatedLines);
-    }
-
-    public User validateUser(String username, String password) throws IOException {
-        List<User> users = getAllUsers();
-        for (User user : users) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
     public User getUserById(String userId) throws IOException {
         List<User> users = getAllUsers();
+        
         for (User user : users) {
             if (user.getUserId().equals(userId)) {
                 return user;
             }
         }
+        
         return null;
     }
-
-    private void validateUserData(User user) {
-        if (user.getUserId() == null || user.getUserId().trim().isEmpty()) {
-            throw new IllegalArgumentException("User ID cannot be empty");
-        }
-        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be empty");
-        }
-        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be empty");
-        }
-        if (!user.isValidPassword(user.getPassword())) { 
-            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one number and one special character");
-        }
-        if (user.getEmail() == null || !user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
-        if (user.getRole() == null || !isValidRole(user.getRole())) {
-            throw new IllegalArgumentException("Invalid role");
-        }
-    }
-
-    public void updateUser(User user) throws IOException {
-        validateUserData(user);
-        
-        List<String> lines = Files.readAllLines(Paths.get(USER_FILE_PATH));
-        List<String> updatedLines = new ArrayList<>();
-        boolean userFound = false;
     
-        updatedLines.add(lines.get(0)); // Add header line
+    public User getUserByUsername(String username) throws IOException {
+        List<User> users = getAllUsers();
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length > 0) {
-                if (data[0].equals(user.getUserId())) {
-                    // Update the user
-                    String userLine = String.format("%s,%s,%s,%s,%s",
-                        user.getUserId(),
-                        user.getUsername(),
-                        user.getPassword(),
-                        user.getEmail(),
-                        user.getRole());
-                    updatedLines.add(userLine);
-                    userFound = true;
-                } else {
-                    // Keep other users as is
-                    updatedLines.add(lines.get(i));
-                }
-            } else {
-                // Add any lines without proper format
-                updatedLines.add(lines.get(i));
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return user;
             }
         }
+        
+        return null;
+    }
     
-        if (!userFound) {
+    public User authenticate(String username, String password) throws IOException {
+        List<User> users = getAllUsers();
+        
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+        
+        return null;
+    }
+    
+    public void addUser(User user) throws IOException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        
+        List<User> users = getAllUsers();
+        
+        for (User existingUser : users) {
+            if (existingUser.getUserId().equals(user.getUserId())) {
+                throw new IllegalArgumentException("User ID already exists: " + user.getUserId());
+            }
+            if (existingUser.getUsername().equals(user.getUsername())) {
+                throw new IllegalArgumentException("Username already exists: " + user.getUsername());
+            }
+        }
+        
+        users.add(user);
+        writeUsersToFile(users);
+    }
+    
+    public void updateUser(User user) throws IOException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        
+        List<User> users = getAllUsers();
+        boolean found = false;
+        
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUserId().equals(user.getUserId())) {
+                users.set(i, user);
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) {
             throw new IllegalArgumentException("User not found: " + user.getUserId());
         }
-    
-        Files.write(Paths.get(USER_FILE_PATH), updatedLines);
-    }
-
-    private boolean isValidRole(String role) {
-        return role.equals(User.ROLE_INVENTORY_MANAGER) ||
-               role.equals(User.ROLE_PURCHASE_MANAGER) ||
-               role.equals(User.ROLE_FINANCE_MANAGER) ||
-               role.equals(User.ROLE_SALES_MANAGER) ||
-               role.equals(User.ROLE_ADMINISTRATOR);
+        
+        writeUsersToFile(users);
     }
     
-    // ITEM METHODS
+    public void deleteUser(String userId) throws IOException {
+        List<User> users = getAllUsers();
+        boolean removed = false;
+        
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUserId().equals(userId)) {
+                users.remove(i);
+                removed = true;
+                break;
+            }
+        }
+        
+        if (!removed) {
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+        
+        writeUsersToFile(users);
+    }
+    
+    private void writeUsersToFile(List<User> users) throws IOException {
+        File file = new File(USERS_FILE);
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("userId,username,password,email,role");
+            writer.newLine();
+            
+            for (User user : users) {
+                writer.write(String.format("%s,%s,%s,%s,%s",
+                    user.getUserId(),
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getEmail(),
+                    user.getRole()
+                ));
+                writer.newLine();
+            }
+        }
+    }
     
     public List<Item> getAllItems() throws IOException {
         List<Item> items = new ArrayList<>();
-        List<String> lines = Files.readAllLines(Paths.get(ITEM_FILE_PATH));
+        File file = new File(ITEMS_FILE);
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length == 3) {
-                items.add(new Item(data[0], data[1], data[2]));
-            }
+        if (!file.exists()) {
+            return items;
         }
-        return items;
-    }
-    
-    private String generateNewItemCode() throws IOException {
-        List<Item> items = getAllItems();
-        int maxNum = 0;
-        String prefix = "ITEM";
         
-        for (Item item : items) {
-            if (item.getItemCode().startsWith(prefix)) {
-                try {
-                    String numPart = item.getItemCode().substring(prefix.length());
-                    int currentNum = Integer.parseInt(numPart);
-                    if (currentNum > maxNum) {
-                        maxNum = currentNum;
-                    }
-                } catch (NumberFormatException e) {
-                    // Ignore if the ID doesn't follow the expected format
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+            
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+                
+                String[] parts = line.split(",");
+                if (parts.length >= 3) {
+                    String itemCode = parts[0];
+                    String itemName = parts[1];
+                    String supplierId = parts[2];
+                    
+                    Item item = new Item(itemCode, itemName, supplierId);
+                    items.add(item);
                 }
             }
         }
-        return prefix + String.format("%03d", maxNum + 1);
-    }
-    
-    public void createItem(Item item) throws IOException {
-        validateItemData(item);
         
-        if (item.getItemCode() == null || item.getItemCode().trim().isEmpty()) {
-            item.setItemCode(generateNewItemCode());
-        }
-        
-        List<Item> existingItems = getAllItems();
-        for (Item existingItem : existingItems) {
-            if (existingItem.getItemCode().equals(item.getItemCode())) {
-                throw new IllegalArgumentException("Item Code already exists");
-            }
-        }
-
-        String itemLine = String.format("%s,%s,%s%n",
-            item.getItemCode(),
-            item.getItemName(),
-            item.getSupplierId());
-        Files.write(Paths.get(ITEM_FILE_PATH), itemLine.getBytes(), StandardOpenOption.APPEND);
-    }
-    
-    public void deleteItem(String itemCode) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(ITEM_FILE_PATH));
-        List<String> updatedLines = new ArrayList<>();
-        boolean itemFound = false;
-
-        updatedLines.add(lines.get(0));
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length > 0 && !data[0].equals(itemCode)) {
-                updatedLines.add(lines.get(i));
-            } else if (data.length > 0 && data[0].equals(itemCode)) {
-                itemFound = true;
-            } else {
-                updatedLines.add(lines.get(i));
-            }
-        }
-
-        if (!itemFound) {
-            throw new IllegalArgumentException("Item not found: " + itemCode);
-        }
-
-        Files.write(Paths.get(ITEM_FILE_PATH), updatedLines);
+        return items;
     }
     
     public Item getItemByCode(String itemCode) throws IOException {
         List<Item> items = getAllItems();
+        
         for (Item item : items) {
             if (item.getItemCode().equals(itemCode)) {
                 return item;
             }
         }
+        
         return null;
     }
     
-    private void validateItemData(Item item) {
-        if (item.getItemName() == null || item.getItemName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Item name cannot be empty");
+    public void addItem(Item item) throws IOException {
+        if (item == null || !item.validateItemData()) {
+            throw new IllegalArgumentException("Invalid item data");
         }
-        if (item.getSupplierId() == null || item.getSupplierId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Supplier ID cannot be empty");
+        
+        List<Item> items = getAllItems();
+        
+        for (Item existingItem : items) {
+            if (existingItem.getItemCode().equals(item.getItemCode())) {
+                throw new IllegalArgumentException("Item code already exists: " + item.getItemCode());
+            }
         }
+        
+        items.add(item);
+        writeItemsToFile(items);
     }
     
     public void updateItem(Item item) throws IOException {
-        validateItemData(item);
+        if (item == null || !item.validateItemData()) {
+            throw new IllegalArgumentException("Invalid item data");
+        }
         
-        List<String> lines = Files.readAllLines(Paths.get(ITEM_FILE_PATH));
-        List<String> updatedLines = new ArrayList<>();
-        boolean itemFound = false;
-    
-        updatedLines.add(lines.get(0));
+        List<Item> items = getAllItems();
+        boolean found = false;
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length > 0) {
-                if (data[0].equals(item.getItemCode())) {
-                    String itemLine = String.format("%s,%s,%s",
-                        item.getItemCode(),
-                        item.getItemName(),
-                        item.getSupplierId());
-                    updatedLines.add(itemLine);
-                    itemFound = true;
-                } else {
-                    updatedLines.add(lines.get(i));
-                }
-            } else {
-                updatedLines.add(lines.get(i));
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getItemCode().equals(item.getItemCode())) {
+                items.set(i, item);
+                found = true;
+                break;
             }
         }
-    
-        if (!itemFound) {
+        
+        if (!found) {
             throw new IllegalArgumentException("Item not found: " + item.getItemCode());
         }
-    
-        Files.write(Paths.get(ITEM_FILE_PATH), updatedLines);
+        
+        writeItemsToFile(items);
     }
     
-    // PURCHASE REQUISITION METHODS
+    public void deleteItem(String itemCode) throws IOException {
+        List<Item> items = getAllItems();
+        boolean removed = false;
+        
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getItemCode().equals(itemCode)) {
+                items.remove(i);
+                removed = true;
+                break;
+            }
+        }
+        
+        if (!removed) {
+            throw new IllegalArgumentException("Item not found: " + itemCode);
+        }
+        
+        writeItemsToFile(items);
+    }
+    
+    private void writeItemsToFile(List<Item> items) throws IOException {
+        File file = new File(ITEMS_FILE);
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("itemCode,itemName,supplierId");
+            writer.newLine();
+            
+            for (Item item : items) {
+                writer.write(String.format("%s,%s,%s",
+                    item.getItemCode(),
+                    item.getItemName(),
+                    item.getSupplierId()
+                ));
+                writer.newLine();
+            }
+        }
+    }
     
     public List<PurchaseRequisition> getAllPurchaseRequisitions() throws IOException {
         List<PurchaseRequisition> requisitions = new ArrayList<>();
-        List<String> lines = Files.readAllLines(Paths.get(PURCHASE_REQUISITION_FILE_PATH));
+        File file = new File(REQUISITIONS_FILE);
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length == 6) {
-                PurchaseRequisition requisition = new PurchaseRequisition(
-                    data[0], // requisitionId
-                    data[1], // itemCode
-                    Integer.parseInt(data[2]), // quantity
-                    LocalDate.parse(data[3], DATE_FORMATTER), // requiredDate
-                    data[4], // salesManagerId
-                    data[5]  // status
-                );
-                
-                // Add item name to the requisition
-                try {
-                    Item item = getItemByCode(data[1]);
-                    if (item != null) {
-                        requisition.setItemName(item.getItemName());
-                    }
-                } catch (Exception e) {
-                    // If we can't find the item, just leave the name blank
-                    System.out.println("Warning: Could not find item with code " + data[1]);
+        if (!file.exists()) {
+            return requisitions;
+        }
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+            
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
                 }
                 
-                requisitions.add(requisition);
+                String[] parts = line.split(",");
+                if (parts.length >= 6) {
+                    String requisitionId = parts[0];
+                    String itemCode = parts[1];
+                    int quantity = Integer.parseInt(parts[2]);
+                    LocalDate requiredDate = LocalDate.parse(parts[3], DATE_FORMATTER);
+                    String salesManagerId = parts[4];
+                    String status = parts[5];
+                    
+                    String itemName = "";
+                    if (parts.length > 6) {
+                        itemName = parts[6];
+                    } else {
+                        try {
+                            Item item = getItemByCode(itemCode);
+                            if (item != null) {
+                                itemName = item.getItemName();
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
+                    
+                    PurchaseRequisition requisition = new PurchaseRequisition(
+                        requisitionId, itemCode, itemName, quantity, requiredDate, salesManagerId, status
+                    );
+                    
+                    requisitions.add(requisition);
+                }
             }
         }
+        
         return requisitions;
     }
-
+    
     public PurchaseRequisition getPurchaseRequisitionById(String requisitionId) throws IOException {
         List<PurchaseRequisition> requisitions = getAllPurchaseRequisitions();
+        
         for (PurchaseRequisition requisition : requisitions) {
             if (requisition.getRequisitionId().equals(requisitionId)) {
                 return requisition;
             }
         }
+        
         return null;
     }
-
-    private String generateNewRequisitionId() throws IOException {
+    
+    public void addPurchaseRequisition(PurchaseRequisition requisition) throws IOException {
+        if (requisition == null || !requisition.validateData()) {
+            throw new IllegalArgumentException("Invalid requisition data");
+        }
+        
         List<PurchaseRequisition> requisitions = getAllPurchaseRequisitions();
-        int maxNum = 0;
-        String prefix = "REQ";
         
-        for (PurchaseRequisition requisition : requisitions) {
-            if (requisition.getRequisitionId().startsWith(prefix)) {
-                try {
-                    String numPart = requisition.getRequisitionId().substring(prefix.length());
-                    int currentNum = Integer.parseInt(numPart);
-                    if (currentNum > maxNum) {
-                        maxNum = currentNum;
-                    }
-                } catch (NumberFormatException e) {
-                    // Ignore if the ID doesn't follow the expected format
-                }
-            }
-        }
-        return prefix + String.format("%03d", maxNum + 1);
-    }
-
-    public void createPurchaseRequisition(PurchaseRequisition requisition) throws IOException {
-        validatePurchaseRequisitionData(requisition);
-        
-        if (requisition.getRequisitionId() == null || requisition.getRequisitionId().trim().isEmpty()) {
-            requisition.setRequisitionId(generateNewRequisitionId());
-        }
-        
-        List<PurchaseRequisition> existingRequisitions = getAllPurchaseRequisitions();
-        for (PurchaseRequisition existing : existingRequisitions) {
+        for (PurchaseRequisition existing : requisitions) {
             if (existing.getRequisitionId().equals(requisition.getRequisitionId())) {
-                throw new IllegalArgumentException("Requisition ID already exists");
+                throw new IllegalArgumentException("Requisition ID already exists: " + requisition.getRequisitionId());
             }
         }
-
-        String requisitionLine = String.format("%s,%s,%d,%s,%s,%s%n",
-            requisition.getRequisitionId(),
-            requisition.getItemCode(),
-            requisition.getQuantity(),
-            requisition.getRequiredDate().format(DATE_FORMATTER),
-            requisition.getSalesManagerId(),
-            requisition.getStatus());
-        Files.write(Paths.get(PURCHASE_REQUISITION_FILE_PATH), requisitionLine.getBytes(), StandardOpenOption.APPEND);
+        
+        requisitions.add(requisition);
+        writeRequisitionsToFile(requisitions);
     }
-
+    
     public void updatePurchaseRequisition(PurchaseRequisition requisition) throws IOException {
-        validatePurchaseRequisitionData(requisition);
+        if (requisition == null || !requisition.validateData()) {
+            throw new IllegalArgumentException("Invalid requisition data");
+        }
         
-        List<String> lines = Files.readAllLines(Paths.get(PURCHASE_REQUISITION_FILE_PATH));
-        List<String> updatedLines = new ArrayList<>();
-        boolean requisitionFound = false;
-
-        updatedLines.add(lines.get(0)); // Add header line
+        List<PurchaseRequisition> requisitions = getAllPurchaseRequisitions();
+        boolean found = false;
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length > 0) {
-                if (data[0].equals(requisition.getRequisitionId())) {
-                    String requisitionLine = String.format("%s,%s,%d,%s,%s,%s",
-                        requisition.getRequisitionId(),
-                        requisition.getItemCode(),
-                        requisition.getQuantity(),
-                        requisition.getRequiredDate().format(DATE_FORMATTER),
-                        requisition.getSalesManagerId(),
-                        requisition.getStatus());
-                    updatedLines.add(requisitionLine);
-                    requisitionFound = true;
-                } else {
-                    updatedLines.add(lines.get(i));
-                }
-            } else {
-                updatedLines.add(lines.get(i));
+        for (int i = 0; i < requisitions.size(); i++) {
+            if (requisitions.get(i).getRequisitionId().equals(requisition.getRequisitionId())) {
+                requisitions.set(i, requisition);
+                found = true;
+                break;
             }
         }
-
-        if (!requisitionFound) {
+        
+        if (!found) {
             throw new IllegalArgumentException("Requisition not found: " + requisition.getRequisitionId());
         }
-
-        Files.write(Paths.get(PURCHASE_REQUISITION_FILE_PATH), updatedLines);
-    }
-
-    public void deletePurchaseRequisition(String requisitionId) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(PURCHASE_REQUISITION_FILE_PATH));
-        List<String> updatedLines = new ArrayList<>();
-        boolean requisitionFound = false;
-
-        updatedLines.add(lines.get(0)); // Add header line
         
-        for (int i = 1; i < lines.size(); i++) {
-            String[] data = lines.get(i).split(CSV_DELIMITER);
-            if (data.length > 0 && !data[0].equals(requisitionId)) {
-                updatedLines.add(lines.get(i));
-            } else if (data.length > 0 && data[0].equals(requisitionId)) {
-                requisitionFound = true;
-            } else {
-                updatedLines.add(lines.get(i));
+        writeRequisitionsToFile(requisitions);
+    }
+    
+    public void deletePurchaseRequisition(String requisitionId) throws IOException {
+        List<PurchaseRequisition> requisitions = getAllPurchaseRequisitions();
+        boolean removed = false;
+        
+        for (int i = 0; i < requisitions.size(); i++) {
+            if (requisitions.get(i).getRequisitionId().equals(requisitionId)) {
+                requisitions.remove(i);
+                removed = true;
+                break;
             }
         }
-
-        if (!requisitionFound) {
+        
+        if (!removed) {
             throw new IllegalArgumentException("Requisition not found: " + requisitionId);
         }
-
-        Files.write(Paths.get(PURCHASE_REQUISITION_FILE_PATH), updatedLines);
+        
+        writeRequisitionsToFile(requisitions);
     }
-
-    private void validatePurchaseRequisitionData(PurchaseRequisition requisition) {
-        if (requisition.getRequisitionId() == null || requisition.getRequisitionId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Requisition ID cannot be empty");
+    
+    private void writeRequisitionsToFile(List<PurchaseRequisition> requisitions) throws IOException {
+        File file = new File(REQUISITIONS_FILE);
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("requisitionId,itemCode,quantity,requiredDate,salesManagerId,status,itemName");
+            writer.newLine();
+            
+            for (PurchaseRequisition requisition : requisitions) {
+                writer.write(String.format("%s,%s,%d,%s,%s,%s,%s",
+                    requisition.getRequisitionId(),
+                    requisition.getItemCode(),
+                    requisition.getQuantity(),
+                    requisition.getRequiredDate().format(DATE_FORMATTER),
+                    requisition.getSalesManagerId(),
+                    requisition.getStatus(),
+                    requisition.getItemName() != null ? requisition.getItemName() : ""
+                ));
+                writer.newLine();
+            }
         }
-        if (requisition.getItemCode() == null || requisition.getItemCode().trim().isEmpty()) {
-            throw new IllegalArgumentException("Item Code cannot be empty");
-        }
-        if (requisition.getQuantity() <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero");
-        }
-        if (requisition.getRequiredDate() == null) {
-            throw new IllegalArgumentException("Required Date cannot be empty");
-        }
-        if (requisition.getSalesManagerId() == null || requisition.getSalesManagerId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Sales Manager ID cannot be empty");
-        }
-        if (requisition.getStatus() == null || requisition.getStatus().trim().isEmpty()) {
-            throw new IllegalArgumentException("Status cannot be empty");
+    }
+    
+    public List<PurchaseOrder> getAllPurchaseOrders() throws IOException {
+        List<PurchaseOrder> purchaseOrders = new ArrayList<>();
+        File file = new File(PURCHASE_ORDERS_FILE);
+        
+        if (!file.exists()) {
+            return purchaseOrders;
         }
         
-        // Validate if status is one of the allowed values
-        if (!requisition.getStatus().equals(PurchaseRequisition.STATUS_PENDING) && 
-            !requisition.getStatus().equals(PurchaseRequisition.STATUS_APPROVED) && 
-            !requisition.getStatus().equals(PurchaseRequisition.STATUS_REJECTED)) {
-            throw new IllegalArgumentException("Invalid status value");
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+            
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+                
+                String[] parts = line.split(",");
+                if (parts.length >= 11) {
+                    String orderId = parts[0];
+                    String requisitionId = parts[1];
+                    String itemCode = parts[2];
+                    int quantity = Integer.parseInt(parts[3]);
+                    double unitPrice = Double.parseDouble(parts[4]);
+                    double totalAmount = Double.parseDouble(parts[5]);
+                    LocalDate orderDate = LocalDate.parse(parts[6], DATE_FORMATTER);
+                    LocalDate expectedDeliveryDate = LocalDate.parse(parts[7], DATE_FORMATTER);
+                    String supplierId = parts[8];
+                    String purchaseManagerId = parts[9];
+                    String status = parts[10];
+                    
+                    String itemName = "";
+                    try {
+                        Item item = getItemByCode(itemCode);
+                        if (item != null) {
+                            itemName = item.getItemName();
+                        }
+                    } catch (Exception e) {
+                    }
+                    
+                    PurchaseOrder purchaseOrder = new PurchaseOrder(
+                        orderId, requisitionId, itemCode, itemName, quantity, unitPrice, totalAmount,
+                        orderDate, expectedDeliveryDate, supplierId, purchaseManagerId, status
+                    );
+                    
+                    purchaseOrders.add(purchaseOrder);
+                }
+            }
+        }
+        
+        return purchaseOrders;
+    }
+    
+    public PurchaseOrder getPurchaseOrderById(String orderId) throws IOException {
+        List<PurchaseOrder> purchaseOrders = getAllPurchaseOrders();
+        
+        for (PurchaseOrder order : purchaseOrders) {
+            if (order.getOrderId().equals(orderId)) {
+                return order;
+            }
+        }
+        
+        return null;
+    }
+    
+    public void updatePurchaseOrder(PurchaseOrder order) throws IOException {
+        if (order == null || !order.validateData()) {
+            throw new IllegalArgumentException("Invalid purchase order data");
+        }
+        
+        List<PurchaseOrder> orders = getAllPurchaseOrders();
+        boolean found = false;
+        
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).getOrderId().equals(order.getOrderId())) {
+                orders.set(i, order);
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) {
+            throw new IllegalArgumentException("Purchase order not found: " + order.getOrderId());
+        }
+        
+        writePurchaseOrdersToFile(orders);
+    }
+    
+    public void addPurchaseOrder(PurchaseOrder order) throws IOException {
+        if (order == null || !order.validateData()) {
+            throw new IllegalArgumentException("Invalid purchase order data");
+        }
+        
+        List<PurchaseOrder> orders = getAllPurchaseOrders();
+        
+        for (PurchaseOrder existing : orders) {
+            if (existing.getOrderId().equals(order.getOrderId())) {
+                throw new IllegalArgumentException("Purchase order ID already exists: " + order.getOrderId());
+            }
+        }
+        
+        orders.add(order);
+        writePurchaseOrdersToFile(orders);
+    }
+    
+    public void deletePurchaseOrder(String orderId) throws IOException {
+        List<PurchaseOrder> orders = getAllPurchaseOrders();
+        boolean removed = false;
+        
+        for (int i = 0; i < orders.size(); i++) {
+            if (orders.get(i).getOrderId().equals(orderId)) {
+                orders.remove(i);
+                removed = true;
+                break;
+            }
+        }
+        
+        if (!removed) {
+            throw new IllegalArgumentException("Purchase order not found: " + orderId);
+        }
+        
+        writePurchaseOrdersToFile(orders);
+    }
+    
+    private void writePurchaseOrdersToFile(List<PurchaseOrder> orders) throws IOException {
+        File file = new File(PURCHASE_ORDERS_FILE);
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("orderId,requisitionId,itemCode,quantity,unitPrice,totalAmount,orderDate,expectedDeliveryDate,supplierId,purchaseManagerId,status");
+            writer.newLine();
+            
+            for (PurchaseOrder order : orders) {
+                writer.write(String.format("%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s",
+                    order.getOrderId(),
+                    order.getRequisitionId(),
+                    order.getItemCode(),
+                    order.getQuantity(),
+                    order.getUnitPrice(),
+                    order.getTotalAmount(),
+                    order.getOrderDate().format(DATE_FORMATTER),
+                    order.getExpectedDeliveryDate().format(DATE_FORMATTER),
+                    order.getSupplierId(),
+                    order.getPurchaseManagerId(),
+                    order.getStatus()
+                ));
+                writer.newLine();
+            }
         }
     }
 }
