@@ -1,2 +1,6 @@
-userId,username,password,role
-ADMN001,admin,admin123,Administrator
+userId,username,password,email,role
+ADMN001,admin,admin123,admin@owsb.com,ADMN
+INV001,Hamza,rafaaa,hamza@owsb.com,INV
+PUR001,Zahra,pass123,zahra@owsb.com,PUR
+FIN001,Gaspar,pass123,gaspar@owsb.com,FIN
+SAL001,Sharon,pass123,sharon@owsb.com,SAL

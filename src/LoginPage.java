@@ -1,5 +1,8 @@
+import database.DatabaseHelper;
 import java.awt.*;
+import java.io.IOException;
 import javax.swing.*;
+import models.User;
 
 public class LoginPage extends UIBase {
     private static final String TITLE = "Automated Purchase Order Management System";
@@ -39,6 +42,33 @@ public class LoginPage extends UIBase {
 
         JButton loginBtn = new JButton("Login");
         loginBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loginBtn.addActionListener(e -> {
+            String username = userField.getText();
+            String password = new String(passField.getPassword());
+            
+            try {
+                DatabaseHelper dbHelper = new DatabaseHelper();
+                User user = dbHelper.validateUser(username, password);
+                
+                if (user != null) {
+                    JOptionPane.showMessageDialog(this,
+                        "Welcome " + user.getUsername() + "!\nRole: " + user.getRole(),
+                        "Login Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                        "Invalid username or password",
+                        "Login Failed",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Error accessing user database",
+                    "System Error",
+                    JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
 
         form.add(Box.createVerticalStrut(10));
         form.add(userField);
