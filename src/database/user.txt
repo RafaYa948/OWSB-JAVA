@@ -1,5 +1,5 @@
 userId,username,password,email,role
 ADMN001,a,a,admin@owsb.com,ADMN
-INV001,Hamza,Hamza@123#,hamza@owsb.com,INV
+INV001,Hamzad,Hydra720!,hama@mail.cpm,ADMN
 PUR001,Zahra,Zahra@123#,zahra@owsb.com,PUR
 FIN001,Gaspar2,Gaspar@123#,gaspar@owsb.com,FIN

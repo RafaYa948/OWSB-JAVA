@@ -256,18 +256,15 @@ public class ManageUsersPage extends UIBase {
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
     
-        // Buttons Panel with Filtering
         JPanel buttonsPanel = new JPanel(new GridLayout(1, 4, 10, 0));
         buttonsPanel.setBackground(Color.WHITE);
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
     
-        // Filter Button
         JButton filterBtn = new JButton("Filter by: All Users ▼");
         styleButton(filterBtn);
         createFilterPopup(filterBtn);
         buttonsPanel.add(filterBtn);
     
-        // Add Button
         JButton addButton = new JButton("Add User");
         styleButton(addButton);
         addButton.addActionListener(e -> {
@@ -278,6 +275,7 @@ public class ManageUsersPage extends UIBase {
                 JOptionPane.YES_NO_OPTION
             );
             if (choice == JOptionPane.YES_OPTION) {
+                setVisible(false);
                 SwingUtilities.invokeLater(() -> {
                     AddUserPage addPage = new AddUserPage(currentUser, this);
                     addPage.setVisible(true);
@@ -286,7 +284,6 @@ public class ManageUsersPage extends UIBase {
         });
         buttonsPanel.add(addButton);
     
-        // Edit Button
         JButton editButton = new JButton("Edit User");
         styleButton(editButton);
         editButton.addActionListener(e -> {
@@ -298,32 +295,25 @@ public class ManageUsersPage extends UIBase {
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
-        
+            
             String userId = (String) usersTable.getValueAt(selectedRow, 0);
             String username = (String) usersTable.getValueAt(selectedRow, 1);
             String password = (String) usersTable.getValueAt(selectedRow, 2);
             String email = (String) usersTable.getValueAt(selectedRow, 3);
             String role = (String) usersTable.getValueAt(selectedRow, 4);
-        
-            // Check if userId is null or blank
-            if (userId == null || userId.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                    "Selected user's data is invalid or incomplete.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        
+            
+            System.out.println("Selected user for editing: " + userId + ", " + username);
+            
             User selectedUser = new User(userId, username, password, email, role);
-        
-            SwingUtilities.invokeLater(() -> {
-                EditUserPage editPage = new EditUserPage(currentUser, this, selectedUser);
-                editPage.setVisible(true);
-            });
+            
+            setVisible(false);
+            System.out.println("Launching EditUserPage");
+            
+            EditUserPage editPage = new EditUserPage(currentUser, this, selectedUser);
+            editPage.setVisible(true);
         });
         buttonsPanel.add(editButton);
     
-        // Delete Button
         JButton deleteButton = new JButton("Delete User");
         styleButton(deleteButton);
         deleteButton.addActionListener(e -> {
