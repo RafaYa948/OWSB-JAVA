@@ -80,6 +80,32 @@ public class DatabaseHelper {
         
         return null;
     }
+
+    public void createItem(Item item) throws IOException {
+        addItem(item);
+    }
+
+    public User validateUser(String username, String password) throws IOException {
+        return authenticate(username, password);
+    }
+
+    public void registerUser(User user) throws IOException {
+        String userId = generateUserId();
+        user.setUserId(userId);
+        addUser(user);
+    }
+
+    private String generateUserId() throws IOException {
+        List<User> users = getAllUsers();
+        int maxId = 0;
+        for (User user : users) {
+            try {
+                int id = Integer.parseInt(user.getUserId().substring(1));
+                maxId = Math.max(maxId, id);
+            } catch (NumberFormatException e) {}
+        }
+        return "U" + String.format("%03d", maxId + 1);
+    }
     
     public User getUserByUsername(String username) throws IOException {
         List<User> users = getAllUsers();

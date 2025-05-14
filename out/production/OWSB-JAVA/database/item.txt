@@ -1,0 +1,19 @@
+itemCode,itemName,supplierId
+ITEM002,Executive Desk,SUP001
+ITEM003,Dell Laptop,SUP002
+ITEM004,HP Printer,SUP002
+ITEM005,Whiteboard,SUP003
+ITEM007,Projector,SUP002
+ITEM008,Conference Table,SUP003
+ITEM009,Paper Shredder,SUP004
+ITEM010,Xerox Machine,SUP002
+ITEM011,Coffee Maker,SUP004
+ITEM012,Water Dispenser,SUP004
+ITEM013,Desk Lamp,SUP003
+ITEM014,Bookshelf,SUP001
+ITEM015,Apple MacBook,SUP005
+ITEM016,Wireless Mouse,SUP002
+ITEM017,Keyboard,SUP002
+ITEM018,Monitor,SUP002
+ITEM019,Desk Phone,SUP006
+ITEM020,Office Sofa,SUP001
