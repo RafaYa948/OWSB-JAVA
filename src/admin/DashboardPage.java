@@ -211,7 +211,15 @@ public class DashboardPage extends UIBase {
         headerPanel.add(title);
         
         topContainer.add(headerPanel, BorderLayout.SOUTH);
-        
+
+        userLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToMyProfile();
+            }
+        });
+
+
         return topContainer;
     }
 
@@ -400,6 +408,14 @@ public class DashboardPage extends UIBase {
         SwingUtilities.invokeLater(() -> {
             SystemLogsPage page = new SystemLogsPage(currentUser);
             page.setVisible(true);
+        });
+    }
+
+    private void navigateToMyProfile() {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            MyProfilePage profilePage = new MyProfilePage(currentUser);
+            profilePage.setVisible(true);
         });
     }
 
