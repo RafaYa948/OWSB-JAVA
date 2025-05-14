@@ -15,10 +15,12 @@ import models.Item;
 import models.PurchaseOrder;
 import models.PurchaseRequisition;
 import models.User;
+import models.Stock;
 
 public class DatabaseHelper {
     private static final String USERS_FILE = "src/database/user.txt";
     private static final String ITEMS_FILE = "src/database/item.txt";
+    private static final String STOCK_FILE = "src/database/stock.txt";
     private static final String REQUISITIONS_FILE = "src/database/purchase_requisition.txt";
     private static final String PURCHASE_ORDERS_FILE = "src/database/purchase_order.txt";
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -604,7 +606,88 @@ public class DatabaseHelper {
         
         writePurchaseOrdersToFile(orders);
     }
-    
+
+    public List<Stock> getAllStock() throws IOException {
+        List<Stock> stockList = new ArrayList<>();
+        File file = new File(STOCK_FILE);
+
+        if (!file.exists()) {
+            return stockList;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+
+                String[] parts = line.split(",");
+                if (parts.length >= 6) {
+                    String itemCode = parts[0];
+                    String itemName = parts[1];
+                    int quantity = Integer.parseInt(parts[2]);
+                    String location = parts[3];
+                    String lastUpdated = parts[4];
+                    String status = parts[5];
+
+                    Stock stock = new Stock(itemCode, itemName, quantity, location, lastUpdated, status);
+                    stockList.add(stock);
+                }
+            }
+        }
+
+        return stockList;
+    }
+
+    public void updateStock(Stock stock) throws IOException {
+        if (stock == null || !stock.validateData()) {
+            throw new IllegalArgumentException("Invalid stock data");
+        }
+
+        List<Stock> stockList = getAllStock();
+        boolean found = false;
+
+        for (int i = 0; i < stockList.size(); i++) {
+            if (stockList.get(i).getItemCode().equals(stock.getItemCode())) {
+                stockList.set(i, stock);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Stock item not found: " + stock.getItemCode());
+        }
+
+        writeStockToFile(stockList);
+    }
+
+    private void writeStockToFile(List<Stock> stockList) throws IOException {
+        File file = new File(STOCK_FILE);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("itemCode,itemName,quantity,location,lastUpdated,status");
+            writer.newLine();
+
+            for (Stock stock : stockList) {
+                writer.write(String.format("%s,%s,%d,%s,%s,%s",
+                        stock.getItemCode(),
+                        stock.getItemName(),
+                        stock.getQuantity(),
+                        stock.getLocation(),
+                        stock.getLastUpdated(),
+                        stock.getStatus()
+                ));
+                writer.newLine();
+            }
+        }
+    }
+
+
     private void writePurchaseOrdersToFile(List<PurchaseOrder> orders) throws IOException {
         File file = new File(PURCHASE_ORDERS_FILE);
         
@@ -629,5 +712,8 @@ public class DatabaseHelper {
                 writer.newLine();
             }
         }
+
     }
+
+
 }

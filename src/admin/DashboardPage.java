@@ -235,12 +235,12 @@ public class DashboardPage extends UIBase {
             "View<br>Purchase<br>Requisitions",
             "View<br>Purchase<br>Orders"
         };
-        
+
         for (int i = 0; i < topRowCards.length; i++) {
             gbc.gridx = i;
             gbc.gridy = 0;
             JPanel card = createCard(topRowCards[i]);
-            
+
             // Add click handler for Manage Users
             if (i == 0) {
                 card.addMouseListener(new MouseAdapter() {
@@ -250,7 +250,7 @@ public class DashboardPage extends UIBase {
                     }
                 });
             }
-            
+
             // Add click handler for Manage Items
             if (i == 1) {
                 card.addMouseListener(new MouseAdapter() {
@@ -261,7 +261,7 @@ public class DashboardPage extends UIBase {
                 });
             }
 
-            if (i == 2) { 
+            if (i == 2) {
             card.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -277,10 +277,10 @@ public class DashboardPage extends UIBase {
                 }
             });
         }
-            
+
             content.add(card, gbc);
         }
-        
+
         String[] bottomRowCards = {
             "View<br>Stock<br>Reports",
             "View<br>Financial<br>Reports",
@@ -291,6 +291,12 @@ public class DashboardPage extends UIBase {
         bottomRow.setBackground(Color.WHITE);
         
         JPanel card1 = createCard(bottomRowCards[0]);
+        card1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToStockReports();
+            }
+        });
         JPanel card2 = createCard(bottomRowCards[1]);
         JPanel card3 = createCard(bottomRowCards[2]);
         
@@ -356,6 +362,17 @@ public class DashboardPage extends UIBase {
         
         dispose();
     }
+    private void navigateToStockReports() {
+        setVisible(false);
+
+        SwingUtilities.invokeLater(() -> {
+            StockReportsPage stockReportsPage = new StockReportsPage(currentUser);
+            stockReportsPage.setVisible(true);
+        });
+
+        dispose();
+    }
+
     
     private JPanel createCard(final String text) {
         final JPanel card = new JPanel(new BorderLayout());

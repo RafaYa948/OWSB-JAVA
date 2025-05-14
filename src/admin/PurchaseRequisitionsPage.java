@@ -15,6 +15,7 @@ import models.PurchaseRequisition;
 import models.User;
 import database.DatabaseHelper;
 
+
 public class PurchaseRequisitionsPage extends UIBase {
     
     private final User currentUser;
@@ -22,7 +23,8 @@ public class PurchaseRequisitionsPage extends UIBase {
     private DefaultTableModel tableModel;
     private List<PurchaseRequisition> requisitionsList;
     private final DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     public PurchaseRequisitionsPage(User user) {
         super("Purchase Requisitions");
         this.currentUser = user;
