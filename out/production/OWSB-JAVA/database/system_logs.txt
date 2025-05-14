@@ -1,0 +1,11 @@
+logId,userId,username,action,details,timestamp,userRole
+LOG001,U001,admin,Login,User logged in successfully,2025-05-14 09:00:00,ADMN
+LOG002,U002,manager,Create,Created new purchase order PO001,2025-05-14 09:15:00,PUR
+LOG003,U003,sales,View,Viewed stock report,2025-05-14 09:30:00,SAL
+LOG004,U001,admin,Update,Updated user profile,2025-05-14 10:00:00,ADMN
+LOG005,U004,inventory,Create,Added new item ITEM001,2025-05-14 10:15:00,INV
+LOG006,U002,manager,Update,Updated order PO001 status,2025-05-14 10:30:00,PUR
+LOG007,U001,admin,View,Viewed system logs,2025-05-14 11:00:00,ADMN
+LOG008,U003,sales,Create,Created requisition REQ001,2025-05-14 11:15:00,SAL
+LOG009,U004,inventory,Update,Updated stock levels,2025-05-14 11:30:00,INV
+LOG010,U001,admin,Logout,User logged out,2025-05-14 12:00:00,ADMN

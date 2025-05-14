@@ -305,9 +305,15 @@ public class DashboardPage extends UIBase {
             }
         });
         JPanel card3 = createCard(bottomRowCards[2]);
-        
+        card3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToSystemLogs();
+            }
+        });
+
         bottomRow.setLayout(new BoxLayout(bottomRow, BoxLayout.X_AXIS));
-        
+
         bottomRow.add(Box.createHorizontalGlue());
         bottomRow.add(card1);
         bottomRow.add(Box.createRigidArea(new Dimension(20, 0)));
@@ -386,6 +392,15 @@ public class DashboardPage extends UIBase {
             financialReportsPage.setVisible(true);
         });
         dispose();
+    }
+
+
+    private void navigateToSystemLogs() {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            SystemLogsPage page = new SystemLogsPage(currentUser);
+            page.setVisible(true);
+        });
     }
 
     

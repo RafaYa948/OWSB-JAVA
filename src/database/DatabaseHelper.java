@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,10 @@ import models.PurchaseRequisition;
 import models.User;
 import models.Stock;
 import models.Financial;
+import models.SystemLog;
 public class DatabaseHelper {
+    private static final String SYSTEM_LOGS_FILE = "src/database/system_logs.txt";
+    private static final DateTimeFormatter LOG_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String USERS_FILE = "src/database/user.txt";
     private static final String ITEMS_FILE = "src/database/item.txt";
     private static final String FINANCIAL_FILE = "src/database/financial.txt";
@@ -801,6 +805,75 @@ public class DatabaseHelper {
                         financial.getSupplierId(),
                         financial.getPurchaseManagerId(),
                         financial.getStatus()
+                ));
+                writer.newLine();
+            }
+        }
+    }
+
+    public List<SystemLog> getAllSystemLogs() throws IOException {
+        List<SystemLog> logs = new ArrayList<>();
+        File file = new File(SYSTEM_LOGS_FILE);
+
+        if (!file.exists()) {
+            return logs;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+
+                String[] parts = line.split(",");
+                if (parts.length >= 7) {
+                    String logId = parts[0];
+                    String userId = parts[1];
+                    String username = parts[2];
+                    String action = parts[3];
+                    String details = parts[4];
+                    LocalDateTime timestamp = LocalDateTime.parse(parts[5], LOG_DATE_FORMATTER);
+                    String userRole = parts[6];
+
+                    SystemLog log = new SystemLog(logId, userId, username, action, details, timestamp, userRole);
+                    logs.add(log);
+                }
+            }
+        }
+
+        return logs;
+    }
+
+    public void addSystemLog(SystemLog log) throws IOException {
+        if (log == null || !log.validateData()) {
+            throw new IllegalArgumentException("Invalid log data");
+        }
+
+        List<SystemLog> logs = getAllSystemLogs();
+        logs.add(log);
+        writeSystemLogsToFile(logs);
+    }
+
+    private void writeSystemLogsToFile(List<SystemLog> logs) throws IOException {
+        File file = new File(SYSTEM_LOGS_FILE);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("logId,userId,username,action,details,timestamp,userRole");
+            writer.newLine();
+
+            for (SystemLog log : logs) {
+                writer.write(String.format("%s,%s,%s,%s,%s,%s,%s",
+                        log.getLogId(),
+                        log.getUserId(),
+                        log.getUsername(),
+                        log.getAction(),
+                        log.getDetails(),
+                        log.getTimestamp().format(LOG_DATE_FORMATTER),
+                        log.getUserRole()
                 ));
                 writer.newLine();
             }
