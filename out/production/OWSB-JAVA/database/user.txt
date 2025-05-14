@@ -1,3 +1,0 @@
-userId,username,password,email,role
-ADMN001,a,a,admin@owsb.com,ADMN
-INV001,Hamzad,Hydra720!,hama@mail.cpm,ADMN
