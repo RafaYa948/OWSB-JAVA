@@ -298,6 +298,12 @@ public class DashboardPage extends UIBase {
             }
         });
         JPanel card2 = createCard(bottomRowCards[1]);
+        card2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToFinancialReports();
+            }
+        });
         JPanel card3 = createCard(bottomRowCards[2]);
         
         bottomRow.setLayout(new BoxLayout(bottomRow, BoxLayout.X_AXIS));
@@ -370,6 +376,15 @@ public class DashboardPage extends UIBase {
             stockReportsPage.setVisible(true);
         });
 
+        dispose();
+    }
+
+    private void navigateToFinancialReports() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            FinancialReportsPage financialReportsPage = new FinancialReportsPage(currentUser);
+            financialReportsPage.setVisible(true);
+        });
         dispose();
     }
 

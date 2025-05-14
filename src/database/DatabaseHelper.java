@@ -16,10 +16,11 @@ import models.PurchaseOrder;
 import models.PurchaseRequisition;
 import models.User;
 import models.Stock;
-
+import models.Financial;
 public class DatabaseHelper {
     private static final String USERS_FILE = "src/database/user.txt";
     private static final String ITEMS_FILE = "src/database/item.txt";
+    private static final String FINANCIAL_FILE = "src/database/financial.txt";
     private static final String STOCK_FILE = "src/database/stock.txt";
     private static final String REQUISITIONS_FILE = "src/database/purchase_requisition.txt";
     private static final String PURCHASE_ORDERS_FILE = "src/database/purchase_order.txt";
@@ -715,5 +716,95 @@ public class DatabaseHelper {
 
     }
 
+    public List<Financial> getAllFinancialReports() throws IOException {
+        List<Financial> financialList = new ArrayList<>();
+        File file = new File(FINANCIAL_FILE);
+
+        if (!file.exists()) {
+            return financialList;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            boolean firstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+
+                String[] parts = line.split(",");
+                if (parts.length >= 10) {
+                    String orderId = parts[0];
+                    String itemCode = parts[1];
+                    String itemName = parts[2];
+                    int quantity = Integer.parseInt(parts[3]);
+                    double unitPrice = Double.parseDouble(parts[4]);
+                    double totalAmount = Double.parseDouble(parts[5]);
+                    String orderDate = parts[6];
+                    String supplierId = parts[7];
+                    String purchaseManagerId = parts[8];
+                    String status = parts[9];
+
+                    Financial financial = new Financial(
+                            orderId, itemCode, itemName, quantity, unitPrice, totalAmount,
+                            orderDate, supplierId, purchaseManagerId, status
+                    );
+                    financialList.add(financial);
+                }
+            }
+        }
+
+        return financialList;
+    }
+
+    public void updateFinancial(Financial financial) throws IOException {
+        if (financial == null || !financial.validateData()) {
+            throw new IllegalArgumentException("Invalid financial data");
+        }
+
+        List<Financial> financialList = getAllFinancialReports();
+        boolean found = false;
+
+        for (int i = 0; i < financialList.size(); i++) {
+            if (financialList.get(i).getOrderId().equals(financial.getOrderId())) {
+                financialList.set(i, financial);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new IllegalArgumentException("Financial record not found: " + financial.getOrderId());
+        }
+
+        writeFinancialToFile(financialList);
+    }
+
+    private void writeFinancialToFile(List<Financial> financialList) throws IOException {
+        File file = new File(FINANCIAL_FILE);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("orderId,itemCode,itemName,quantity,unitPrice,totalAmount,orderDate,supplierId,purchaseManagerId,status");
+            writer.newLine();
+
+            for (Financial financial : financialList) {
+                writer.write(String.format("%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s",
+                        financial.getOrderId(),
+                        financial.getItemCode(),
+                        financial.getItemName(),
+                        financial.getQuantity(),
+                        financial.getUnitPrice(),
+                        financial.getTotalAmount(),
+                        financial.getOrderDate(),
+                        financial.getSupplierId(),
+                        financial.getPurchaseManagerId(),
+                        financial.getStatus()
+                ));
+                writer.newLine();
+            }
+        }
+    }
 
 }
