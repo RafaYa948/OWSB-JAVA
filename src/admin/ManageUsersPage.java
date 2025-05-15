@@ -112,7 +112,7 @@ public class ManageUsersPage extends UIBase {
         logoPanel.setBackground(Color.WHITE);
         logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel placeholder = new JLabel("Our System Logo", SwingConstants.CENTER);
+        JLabel placeholder = new JLabel("OWSB", SwingConstants.CENTER);
         placeholder.setFont(new Font("Serif", Font.BOLD, 16));
         placeholder.setForeground(new Color(11, 61, 145));
         placeholder.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
@@ -191,7 +191,7 @@ public class ManageUsersPage extends UIBase {
         
         String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
                            ? currentUser.getUsername()
-                           : "Username user";
+                           : "Admin";
         
         JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
