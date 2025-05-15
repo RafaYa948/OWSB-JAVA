@@ -64,23 +64,31 @@ public class PurchaseOrdersPage extends UIBase {
         }
     }
 
+
     private void filterOrders(String status) {
         tableModel.setRowCount(0);
         for (PurchaseOrder order : ordersList) {
             if (order != null && (status == null || order.getStatus().equals(status))) {
                 try {
+                    // Create default formatters if the class ones are null
+                    NumberFormat currFormatter = (currencyFormatter != null) ?
+                            currencyFormatter : NumberFormat.getCurrencyInstance();
+
+                    DateTimeFormatter dateFormatter = (displayDateFormatter != null) ?
+                            displayDateFormatter : DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
                     Object[] rowData = {
-                        order.getOrderId(),
-                        order.getRequisitionId(),
-                        order.getItemCode(),
-                        order.getItemName() != null ? order.getItemName() : "",
-                        Integer.valueOf(order.getQuantity()),
-                        currencyFormatter.format(order.getUnitPrice()),
-                        currencyFormatter.format(order.getTotalAmount()),
-                        order.getOrderDate() != null ? order.getOrderDate().format(displayDateFormatter) : "",
-                        order.getExpectedDeliveryDate() != null ? order.getExpectedDeliveryDate().format(displayDateFormatter) : "",
-                        order.getSupplierId(),
-                        order.getStatus()
+                            order.getOrderId(),
+                            order.getRequisitionId(),
+                            order.getItemCode(),
+                            order.getItemName() != null ? order.getItemName() : "",
+                            Integer.valueOf(order.getQuantity()),
+                            currFormatter.format(order.getUnitPrice()),
+                            currFormatter.format(order.getTotalAmount()),
+                            order.getOrderDate() != null ? order.getOrderDate().format(dateFormatter) : "",
+                            order.getExpectedDeliveryDate() != null ? order.getExpectedDeliveryDate().format(dateFormatter) : "",
+                            order.getSupplierId(),
+                            order.getStatus()
                     };
                     tableModel.addRow(rowData);
                 } catch (Exception e) {
