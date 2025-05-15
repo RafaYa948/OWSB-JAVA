@@ -46,26 +46,26 @@ public class MyProfilePage extends UIBase {
 
     @Override
     protected void initUI() {
-        // Create the main layout
+        
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(Color.WHITE);
 
-        // Create and add sidebar
+        
         JPanel sidebar = createSidebar();
         root.add(sidebar, BorderLayout.WEST);
 
-        // Create and add top bar
+        
         JPanel topBar = createTopBar();
         root.add(topBar, BorderLayout.NORTH);
 
-        // Create and add content panel
+        
         JPanel contentPanel = createContentPanel();
         root.add(contentPanel, BorderLayout.CENTER);
 
-        // Set the content pane
+        
         setContentPane(root);
 
-        // Make sure UI is visible
+        
         setVisible(true);
     }
 
@@ -203,7 +203,7 @@ public class MyProfilePage extends UIBase {
         gbc.gridy = 0;
         gbc.weightx = 0.3;
 
-        // Default values
+        
         String username = "";
         String email = "";
 

@@ -93,13 +93,13 @@ public class RegisterPage extends UIBase {
         actualFormPanel.setBackground(panelColor);
         actualFormPanel.setBorder(formPanelBorder);
 
-        // Set up the form with a more balanced layout
+        
         GridBagConstraints gbcForm = new GridBagConstraints();
         gbcForm.fill = GridBagConstraints.HORIZONTAL;
         gbcForm.weightx = 1.0;
         gbcForm.insets = new Insets(8, 5, 8, 5);
         
-        // Row 1: Role selection dropdown spanning two columns
+        
         gbcForm.gridx = 0;
         gbcForm.gridy = 0;
         gbcForm.gridwidth = 2;
@@ -112,7 +112,7 @@ public class RegisterPage extends UIBase {
         roleComboBox.setSelectedIndex(0);
         actualFormPanel.add(roleComboBox, gbcForm);
         
-        // Row 2: Username and Email fields side by side
+        
         gbcForm.gridy = 1;
         gbcForm.gridwidth = 1;
         usernameField = new JTextField();
@@ -130,7 +130,7 @@ public class RegisterPage extends UIBase {
                          UIManager.getColor("TextField.foreground"));
         actualFormPanel.add(emailField, gbcForm);
         
-        // Row 3: Password and Confirm Password fields side by side
+        
         gbcForm.gridx = 0;
         gbcForm.gridy = 2;
         passwordField = new JPasswordField();
@@ -148,7 +148,7 @@ public class RegisterPage extends UIBase {
                          UIManager.getColor("PasswordField.foreground"));
         actualFormPanel.add(confirmPasswordField, gbcForm);
         
-        // Row 4: Register button spanning both columns
+        
         gbcForm.gridx = 0;
         gbcForm.gridy = 3;
         gbcForm.gridwidth = 2;

@@ -56,7 +56,7 @@ public class User {
             return false;
         }
         boolean hasNumber = password.matches(".*\\d.*");
-        boolean hasSpecial = password.matches(".*[^A-Za-z0-9].*"); // Simplified regex
+        boolean hasSpecial = password.matches(".*[^A-Za-z0-9].*"); 
         return hasNumber && hasSpecial;
     }
 

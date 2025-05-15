@@ -69,7 +69,7 @@ public class PurchaseRequisitionsPage extends UIBase {
         tableModel.setRowCount(0);
         for (PurchaseRequisition requisition : requisitionsList) {
             if (requisition != null && (status == null || requisition.getStatus().equals(status))) {
-                // Fix for formatter error - ensure all values are properly formatted
+                
                 try {
                     Object[] rowData = {
                         requisition.getRequisitionId(),
@@ -252,7 +252,7 @@ public class PurchaseRequisitionsPage extends UIBase {
             
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 3) { // Quantity column
+                if (column == 3) { 
                     return Integer.class;
                 }
                 return String.class;
@@ -266,7 +266,7 @@ public class PurchaseRequisitionsPage extends UIBase {
         requisitionsTable.setRowHeight(30);
         requisitionsTable.setGridColor(Color.LIGHT_GRAY);
         
-        // Color-code rows based on status
+        
         requisitionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -274,17 +274,17 @@ public class PurchaseRequisitionsPage extends UIBase {
                 
                 if (!isSelected) {
                     try {
-                        String status = (String) table.getValueAt(row, 6); // Status is in column 6
+                        String status = (String) table.getValueAt(row, 6); 
                         
                         if (PurchaseRequisition.STATUS_APPROVED.equals(status)) {
-                            c.setBackground(new Color(230, 255, 230)); // Light green for approved
+                            c.setBackground(new Color(230, 255, 230)); 
                         } else if (PurchaseRequisition.STATUS_REJECTED.equals(status)) {
-                            c.setBackground(new Color(255, 230, 230)); // Light red for rejected
+                            c.setBackground(new Color(255, 230, 230)); 
                         } else {
-                            c.setBackground(new Color(255, 255, 230)); // Light yellow for pending
+                            c.setBackground(new Color(255, 255, 230)); 
                         }
                     } catch (Exception e) {
-                        // Default background if there's an error
+                        
                         c.setBackground(Color.WHITE);
                     }
                 }
@@ -360,7 +360,7 @@ public class PurchaseRequisitionsPage extends UIBase {
         });
         buttonsPanel.add(detailsButton);
         
-        // Only allow PURCHASE_MANAGER or ADMINISTRATOR to approve/reject requisitions
+        
         if (currentUser != null && 
             (User.ROLE_PURCHASE_MANAGER.equals(currentUser.getRole()) || 
              User.ROLE_ADMINISTRATOR.equals(currentUser.getRole()))) {
@@ -400,7 +400,7 @@ public class PurchaseRequisitionsPage extends UIBase {
                         options,
                         options[0]);
                     
-                    if (choice == 0 || choice == 1) { // Approve or Reject
+                    if (choice == 0 || choice == 1) { 
                         try {
                             DatabaseHelper dbHelper = new DatabaseHelper();
                             PurchaseRequisition requisition = dbHelper.getPurchaseRequisitionById(requisitionId);
@@ -418,7 +418,7 @@ public class PurchaseRequisitionsPage extends UIBase {
                                     "Status Updated",
                                     JOptionPane.INFORMATION_MESSAGE);
                                     
-                                loadRequisitions(); // Reload to show updated status
+                                loadRequisitions(); 
                             }
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(this,
@@ -436,7 +436,7 @@ public class PurchaseRequisitionsPage extends UIBase {
             });
             buttonsPanel.add(updateStatusButton);
         } else {
-            // If not admin or purchase manager, add a spacer
+            
             buttonsPanel.add(Box.createHorizontalStrut(10));
         }
     

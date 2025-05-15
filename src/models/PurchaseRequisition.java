@@ -5,11 +5,11 @@ import java.time.LocalDate;
 public class PurchaseRequisition {
     private String requisitionId;
     private String itemCode;
-    private String itemName; // For display purposes, not stored in the DB
+    private String itemName; 
     private int quantity;
     private LocalDate requiredDate;
     private String salesManagerId;
-    private String status; // Pending, Approved, Rejected
+    private String status; 
     
     public static final String STATUS_PENDING = "Pending";
     public static final String STATUS_APPROVED = "Approved";
@@ -28,7 +28,7 @@ public class PurchaseRequisition {
         this.status = status;
     }
     
-    // Constructor with itemName
+    
     public PurchaseRequisition(String requisitionId, String itemCode, String itemName,
                               int quantity, LocalDate requiredDate, String salesManagerId, String status) {
         this.requisitionId = requisitionId;

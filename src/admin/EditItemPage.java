@@ -19,19 +19,19 @@ public class EditItemPage extends UIBase {
         this.currentUser = currentUser;
         this.parentPage = parentPage;
         
-        // Get the most up-to-date item data from the database
+        
         try {
             if (itemToEdit != null) {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 Item freshItem = dbHelper.getItemByCode(itemToEdit.getItemCode());
                 
-                // If found in database, use that, otherwise use the provided item
+                
                 this.itemToEdit = (freshItem != null) ? freshItem : itemToEdit;
             } else {
                 this.itemToEdit = itemToEdit;
             }
         } catch (Exception e) {
-            // If there's any error, fall back to the provided item
+            
             this.itemToEdit = itemToEdit;
             System.out.println("Warning: Could not load fresh item data: " + e.getMessage());
         }
@@ -114,10 +114,10 @@ public class EditItemPage extends UIBase {
             formPanel.add(field, gbc);
         }
 
-        // Set field values from the item to edit
+        
         if (itemToEdit != null) {
             fields[0].setText(itemToEdit.getItemCode());
-            fields[0].setEditable(false); // Item code cannot be changed
+            fields[0].setEditable(false); 
             fields[1].setText(itemToEdit.getItemName());
             fields[2].setText(itemToEdit.getSupplierId());
         }

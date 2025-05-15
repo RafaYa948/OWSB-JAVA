@@ -249,7 +249,7 @@ public class DashboardPage extends UIBase {
             gbc.gridy = 0;
             JPanel card = createCard(topRowCards[i]);
 
-            // Add click handler for Manage Users
+            
             if (i == 0) {
                 card.addMouseListener(new MouseAdapter() {
                     @Override
@@ -259,7 +259,7 @@ public class DashboardPage extends UIBase {
                 });
             }
 
-            // Add click handler for Manage Items
+            
             if (i == 1) {
                 card.addMouseListener(new MouseAdapter() {
                     @Override

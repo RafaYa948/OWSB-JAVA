@@ -18,7 +18,7 @@ public class StockReportsPage extends UIBase {
     private JTextField searchField;
     private JComboBox<String> statusFilter;
     private DatabaseHelper dbHelper;
-    private JPanel statsPanel;  // Make this a class field so we can access it easily
+    private JPanel statsPanel;  
     private static final String[] TABLE_COLUMNS = {
             "Item Code", "Item Name", "Quantity", "Location", "Last Updated", "Status"
     };
@@ -35,12 +35,12 @@ public class StockReportsPage extends UIBase {
             dbHelper = new DatabaseHelper();
         }
 
-        // Create main panel with back button
+        
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        // Create back button panel
+        
         JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backButtonPanel.setBackground(Color.WHITE);
         JButton backButton = new JButton("← Back to Dashboard");
@@ -53,20 +53,20 @@ public class StockReportsPage extends UIBase {
         backButtonPanel.add(backButton);
         mainPanel.add(backButtonPanel, BorderLayout.NORTH);
 
-        // Create content panel to hold everything else
+        
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
         contentPanel.setBackground(Color.WHITE);
 
-        // Header Panel
+        
         JPanel headerPanel = createHeaderPanel();
         contentPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Table Panel
+        
         JPanel tablePanel = createTablePanel();
         contentPanel.add(tablePanel, BorderLayout.CENTER);
 
-        // Stats Panel
-        statsPanel = createStatsPanel();  // Assign to class field
+        
+        statsPanel = createStatsPanel();  
         contentPanel.add(statsPanel, BorderLayout.SOUTH);
 
         mainPanel.add(contentPanel, BorderLayout.CENTER);
@@ -78,7 +78,7 @@ public class StockReportsPage extends UIBase {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 10));
         headerPanel.setBackground(Color.WHITE);
 
-        // Title Panel
+        
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setBackground(Color.WHITE);
         JLabel titleLabel = new JLabel("Stock Reports", SwingConstants.CENTER);
@@ -87,23 +87,23 @@ public class StockReportsPage extends UIBase {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Search and Filter Panel
+        
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         controlPanel.setBackground(Color.WHITE);
         controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // Search
+        
         JLabel searchLabel = new JLabel("Search:");
         searchField = new JTextField(20);
         searchField.addActionListener(e -> filterStock());
 
-        // Status Filter
+        
         JLabel filterLabel = new JLabel("Status:");
         String[] statusOptions = {"All", Stock.STATUS_IN_STOCK, Stock.STATUS_LOW_STOCK, Stock.STATUS_OUT_OF_STOCK};
         statusFilter = new JComboBox<>(statusOptions);
         statusFilter.addActionListener(e -> filterStock());
 
-        // Refresh Button
+        
         JButton refreshButton = new JButton("Refresh");
         refreshButton.setBackground(new Color(11, 61, 145));
         refreshButton.setForeground(Color.WHITE);
@@ -146,11 +146,11 @@ public class StockReportsPage extends UIBase {
         stockTable.setShowGrid(true);
         stockTable.setGridColor(new Color(230, 230, 230));
 
-        // Add sorting capability
+        
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
         stockTable.setRowSorter(sorter);
 
-        // Custom cell renderer for status column
+        
         stockTable.getColumnModel().getColumn(5).setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
             JLabel label = new JLabel(value.toString());
             label.setOpaque(true);
@@ -181,13 +181,13 @@ public class StockReportsPage extends UIBase {
             return label;
         });
 
-        // Set column widths
-        stockTable.getColumnModel().getColumn(0).setPreferredWidth(100);  // Item Code
-        stockTable.getColumnModel().getColumn(1).setPreferredWidth(200);  // Item Name
-        stockTable.getColumnModel().getColumn(2).setPreferredWidth(80);   // Quantity
-        stockTable.getColumnModel().getColumn(3).setPreferredWidth(120);  // Location
-        stockTable.getColumnModel().getColumn(4).setPreferredWidth(100);  // Last Updated
-        stockTable.getColumnModel().getColumn(5).setPreferredWidth(100);  // Status
+        
+        stockTable.getColumnModel().getColumn(0).setPreferredWidth(100);  
+        stockTable.getColumnModel().getColumn(1).setPreferredWidth(200);  
+        stockTable.getColumnModel().getColumn(2).setPreferredWidth(80);   
+        stockTable.getColumnModel().getColumn(3).setPreferredWidth(120);  
+        stockTable.getColumnModel().getColumn(4).setPreferredWidth(100);  
+        stockTable.getColumnModel().getColumn(5).setPreferredWidth(100);  
 
         JScrollPane scrollPane = new JScrollPane(stockTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
@@ -209,7 +209,7 @@ public class StockReportsPage extends UIBase {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        // Create stat labels with custom styling
+        
         JLabel totalItemsLabel = createStatLabel("Total Items: 0");
         JLabel inStockLabel = createStatLabel("In Stock: 0");
         JLabel lowStockLabel = createStatLabel("Low Stock: 0");
@@ -310,7 +310,7 @@ public class StockReportsPage extends UIBase {
             }
         }
 
-        // Update the labels in the stats panel
+        
         for (Component component : statsPanel.getComponents()) {
             if (component instanceof JLabel label) {
                 String text = label.getText();

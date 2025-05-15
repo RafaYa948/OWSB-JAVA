@@ -20,19 +20,19 @@ public class EditUserPage extends UIBase {
         this.currentUser = currentUser;
         this.parentPage = parentPage;
         
-        // Get the most up-to-date user data from the database
+        
         try {
             if (userToEdit != null) {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 User freshUser = dbHelper.getUserById(userToEdit.getUserId());
                 
-                // If found in database, use that, otherwise use the provided user
+                
                 this.userToEdit = (freshUser != null) ? freshUser : userToEdit;
             } else {
                 this.userToEdit = userToEdit;
             }
         } catch (Exception e) {
-            // If there's any error, fall back to the provided user
+            
             this.userToEdit = userToEdit;
             System.out.println("Warning: Could not load fresh user data: " + e.getMessage());
         }
@@ -40,12 +40,12 @@ public class EditUserPage extends UIBase {
 
     @Override
     protected void initUI() {
-        // Create main panel
+        
         JPanel root = new JPanel(new BorderLayout(20, 20));
         root.setBackground(Color.WHITE);
         root.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Create header with back button
+        
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
@@ -71,7 +71,7 @@ public class EditUserPage extends UIBase {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
 
-        // Create form panel
+        
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -87,7 +87,7 @@ public class EditUserPage extends UIBase {
         String[] labels = {"User ID", "Name", "Email", "Password", "Role"};
         fields = new JTextField[4];
         
-        // Create the role dropdown
+        
         String[] roles = {
             User.ROLE_ADMINISTRATOR,
             User.ROLE_INVENTORY_MANAGER,
@@ -105,7 +105,7 @@ public class EditUserPage extends UIBase {
         roleComboBox.setBackground(Color.WHITE);
         roleComboBox.setPreferredSize(new Dimension(300, 35));
         
-        // Create form fields
+        
         for (int i = 0; i < labels.length; i++) {
             gbc.gridy = i;
 
@@ -139,7 +139,7 @@ public class EditUserPage extends UIBase {
             }
         }
 
-        // Set field values directly from the table data in userToEdit
+        
         if (userToEdit != null) {
             fields[0].setEditable(false);
             fields[0].setText(userToEdit.getUserId());
@@ -149,7 +149,7 @@ public class EditUserPage extends UIBase {
             roleComboBox.setSelectedItem(userToEdit.getRole());
         }
 
-        // Create buttons
+        
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
@@ -226,14 +226,14 @@ public class EditUserPage extends UIBase {
         gbc.gridwidth = 3;
         formPanel.add(buttonPanel, gbc);
 
-        // Add components to root panel
+        
         root.add(headerPanel, BorderLayout.NORTH);
         root.add(new JScrollPane(formPanel), BorderLayout.CENTER);
         
-        // Set content pane
+        
         setContentPane(root);
         
-        // Set frame properties
+        
         setMinimumSize(new Dimension(600, 500));
         setLocationRelativeTo(null);
     }

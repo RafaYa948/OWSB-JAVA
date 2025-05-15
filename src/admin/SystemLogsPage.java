@@ -66,7 +66,7 @@ public class SystemLogsPage extends UIBase {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        // Back button
+        
         JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backButtonPanel.setBackground(Color.WHITE);
         JButton backButton = new JButton("← Back to Dashboard");
@@ -82,11 +82,11 @@ public class SystemLogsPage extends UIBase {
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
         contentPanel.setBackground(Color.WHITE);
 
-        // Header Panel with filters
+        
         JPanel headerPanel = createHeaderPanel();
         contentPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Table Panel
+        
         JPanel tablePanel = createTablePanel();
         contentPanel.add(tablePanel, BorderLayout.CENTER);
 
@@ -98,7 +98,7 @@ public class SystemLogsPage extends UIBase {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 10));
         headerPanel.setBackground(Color.WHITE);
 
-        // Title
+        
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titlePanel.setBackground(Color.WHITE);
         JLabel titleLabel = new JLabel("System Logs", SwingConstants.CENTER);
@@ -107,17 +107,17 @@ public class SystemLogsPage extends UIBase {
         titlePanel.add(titleLabel);
         headerPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Filters Panel
+        
         JPanel filtersPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         filtersPanel.setBackground(Color.WHITE);
         filtersPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // Search
+        
         JLabel searchLabel = new JLabel("Search:");
         searchField = new JTextField(20);
         searchField.addActionListener(e -> filterLogs());
 
-        // Action Filter
+        
         JLabel actionLabel = new JLabel("Action:");
         String[] actionOptions = {"All", SystemLog.ACTION_LOGIN, SystemLog.ACTION_LOGOUT,
                 SystemLog.ACTION_CREATE, SystemLog.ACTION_UPDATE,
@@ -125,7 +125,7 @@ public class SystemLogsPage extends UIBase {
         actionFilter = new JComboBox<>(actionOptions);
         actionFilter.addActionListener(e -> filterLogs());
 
-        // Role Filter
+        
         JLabel roleLabel = new JLabel("Role:");
         String[] roleOptions = {"All", User.ROLE_ADMINISTRATOR, User.ROLE_INVENTORY_MANAGER,
                 User.ROLE_PURCHASE_MANAGER, User.ROLE_FINANCE_MANAGER,
@@ -133,7 +133,7 @@ public class SystemLogsPage extends UIBase {
         roleFilter = new JComboBox<>(roleOptions);
         roleFilter.addActionListener(e -> filterLogs());
 
-        // Refresh Button
+        
         JButton refreshButton = new JButton("Refresh");
         refreshButton.setBackground(new Color(11, 61, 145));
         refreshButton.setForeground(Color.WHITE);
@@ -179,19 +179,19 @@ public class SystemLogsPage extends UIBase {
         logsTable.setShowGrid(true);
         logsTable.setGridColor(new Color(230, 230, 230));
 
-        // Enable horizontal scrolling
+        
         logsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        // Set column widths
-        logsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // Log ID
-        logsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  // User ID
-        logsTable.getColumnModel().getColumn(2).setPreferredWidth(100); // Username
-        logsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Action
-        logsTable.getColumnModel().getColumn(4).setPreferredWidth(250); // Details
-        logsTable.getColumnModel().getColumn(5).setPreferredWidth(150); // Timestamp
-        logsTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Role
+        
+        logsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
+        logsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  
+        logsTable.getColumnModel().getColumn(2).setPreferredWidth(100); 
+        logsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  
+        logsTable.getColumnModel().getColumn(4).setPreferredWidth(250); 
+        logsTable.getColumnModel().getColumn(5).setPreferredWidth(150); 
+        logsTable.getColumnModel().getColumn(6).setPreferredWidth(80);  
 
-        // Custom renderer for action column
+        
         logsTable.getColumnModel().getColumn(3).setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
             JLabel label = new JLabel(value.toString());
             label.setOpaque(true);

@@ -69,7 +69,7 @@ public class FinancialReportsPage extends UIBase {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        // Back button
+        
         JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backButtonPanel.setBackground(Color.WHITE);
         JButton backButton = new JButton("← Back to Dashboard");
@@ -165,21 +165,21 @@ public class FinancialReportsPage extends UIBase {
         financialTable.setShowGrid(true);
         financialTable.setGridColor(new Color(230, 230, 230));
 
-        // Enable horizontal scrolling
+        
         financialTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        // Set preferred column widths
-        financialTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // Order ID
-        financialTable.getColumnModel().getColumn(1).setPreferredWidth(150); // Item Name
-        financialTable.getColumnModel().getColumn(2).setPreferredWidth(70);  // Quantity
-        financialTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Unit Price
-        financialTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Total Amount
-        financialTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Order Date
-        financialTable.getColumnModel().getColumn(6).setPreferredWidth(80);  // Supplier ID
-        financialTable.getColumnModel().getColumn(7).setPreferredWidth(70);  // PM ID
-        financialTable.getColumnModel().getColumn(8).setPreferredWidth(80);  // Status
+        
+        financialTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
+        financialTable.getColumnModel().getColumn(1).setPreferredWidth(150); 
+        financialTable.getColumnModel().getColumn(2).setPreferredWidth(70);  
+        financialTable.getColumnModel().getColumn(3).setPreferredWidth(100); 
+        financialTable.getColumnModel().getColumn(4).setPreferredWidth(100); 
+        financialTable.getColumnModel().getColumn(5).setPreferredWidth(100); 
+        financialTable.getColumnModel().getColumn(6).setPreferredWidth(80);  
+        financialTable.getColumnModel().getColumn(7).setPreferredWidth(70);  
+        financialTable.getColumnModel().getColumn(8).setPreferredWidth(80);  
 
-        // Custom renderer for status column
+        
         financialTable.getColumnModel().getColumn(8).setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
             JLabel label = new JLabel(value.toString());
             label.setOpaque(true);

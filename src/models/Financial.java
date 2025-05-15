@@ -34,7 +34,7 @@ public class Financial {
         this.status = status;
     }
 
-    // Getters and Setters
+    
     public String getOrderId() { return orderId; }
     public void setOrderId(String orderId) { this.orderId = orderId; }
 

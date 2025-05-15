@@ -356,7 +356,7 @@ public class ManageItemsPage extends UIBase {
         List<String> supplierIds = new ArrayList<>();
         supplierIds.add("All Items");
         
-        // Add supplier ids from items
+        
         if (itemsList != null) {
             for (Item item : itemsList) {
                 if (!supplierIds.contains(item.getSupplierId())) {

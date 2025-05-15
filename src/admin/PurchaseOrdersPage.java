@@ -271,7 +271,7 @@ public class PurchaseOrdersPage extends UIBase {
             
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 4) { // Quantity column
+                if (column == 4) { 
                     return Integer.class;
                 }
                 return String.class;
@@ -285,23 +285,23 @@ public class PurchaseOrdersPage extends UIBase {
         ordersTable.setRowHeight(30);
         ordersTable.setGridColor(Color.LIGHT_GRAY);
         
-        // Enable horizontal scrolling
+        
         ordersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         
-        // Set preferred column widths
-        ordersTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // Order ID
-        ordersTable.getColumnModel().getColumn(1).setPreferredWidth(100); // Requisition ID
-        ordersTable.getColumnModel().getColumn(2).setPreferredWidth(80);  // Item Code
-        ordersTable.getColumnModel().getColumn(3).setPreferredWidth(150); // Item Name
-        ordersTable.getColumnModel().getColumn(4).setPreferredWidth(70);  // Quantity
-        ordersTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Unit Price
-        ordersTable.getColumnModel().getColumn(6).setPreferredWidth(100); // Total Amount
-        ordersTable.getColumnModel().getColumn(7).setPreferredWidth(100); // Order Date
-        ordersTable.getColumnModel().getColumn(8).setPreferredWidth(120); // Expected Delivery
-        ordersTable.getColumnModel().getColumn(9).setPreferredWidth(100); // Supplier ID
-        ordersTable.getColumnModel().getColumn(10).setPreferredWidth(80); // Status
         
-        // Color-code rows based on status
+        ordersTable.getColumnModel().getColumn(0).setPreferredWidth(80);  
+        ordersTable.getColumnModel().getColumn(1).setPreferredWidth(100); 
+        ordersTable.getColumnModel().getColumn(2).setPreferredWidth(80);  
+        ordersTable.getColumnModel().getColumn(3).setPreferredWidth(150); 
+        ordersTable.getColumnModel().getColumn(4).setPreferredWidth(70);  
+        ordersTable.getColumnModel().getColumn(5).setPreferredWidth(100); 
+        ordersTable.getColumnModel().getColumn(6).setPreferredWidth(100); 
+        ordersTable.getColumnModel().getColumn(7).setPreferredWidth(100); 
+        ordersTable.getColumnModel().getColumn(8).setPreferredWidth(120); 
+        ordersTable.getColumnModel().getColumn(9).setPreferredWidth(100); 
+        ordersTable.getColumnModel().getColumn(10).setPreferredWidth(80); 
+        
+        
         ordersTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -309,14 +309,14 @@ public class PurchaseOrdersPage extends UIBase {
                 
                 if (!isSelected) {
                     try {
-                        String status = (String) table.getValueAt(row, 10); // Status column
+                        String status = (String) table.getValueAt(row, 10); 
                         
                         if (PurchaseOrder.STATUS_COMPLETED.equals(status)) {
-                            c.setBackground(new Color(230, 255, 230)); // Light green for completed
+                            c.setBackground(new Color(230, 255, 230)); 
                         } else if (PurchaseOrder.STATUS_CANCELLED.equals(status)) {
-                            c.setBackground(new Color(255, 230, 230)); // Light red for cancelled
-                        } else { // Pending
-                            c.setBackground(new Color(255, 255, 230)); // Light yellow for pending
+                            c.setBackground(new Color(255, 230, 230)); 
+                        } else { 
+                            c.setBackground(new Color(255, 255, 230)); 
                         }
                     } catch (Exception e) {
                         c.setBackground(Color.WHITE);

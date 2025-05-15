@@ -43,7 +43,7 @@ public class SystemLog {
         this.userRole = userRole;
     }
 
-    // Getters and Setters
+    
     public String getLogId() { return logId; }
     public void setLogId(String logId) { this.logId = logId; }
 
