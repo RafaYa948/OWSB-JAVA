@@ -46,26 +46,26 @@ public class MyProfilePage extends UIBase {
 
     @Override
     protected void initUI() {
-        
+
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(Color.WHITE);
 
-        
+
         JPanel sidebar = createSidebar();
         root.add(sidebar, BorderLayout.WEST);
 
-        
+
         JPanel topBar = createTopBar();
         root.add(topBar, BorderLayout.NORTH);
 
-        
+
         JPanel contentPanel = createContentPanel();
         root.add(contentPanel, BorderLayout.CENTER);
 
-        
+
         setContentPane(root);
 
-        
+
         setVisible(true);
     }
 
@@ -87,6 +87,13 @@ public class MyProfilePage extends UIBase {
 
         sidebar.add(logoPanel, BorderLayout.NORTH);
 
+        // Add profile title to sidebar
+        JLabel profileTitle = new JLabel("My Profile", SwingConstants.LEFT);
+        profileTitle.setFont(new Font("Serif", Font.BOLD, 22));
+        profileTitle.setForeground(new Color(11, 61, 145));
+        profileTitle.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 0));
+        sidebar.add(profileTitle, BorderLayout.CENTER);
+
         JPanel menuPanel = new JPanel();
         menuPanel.setBackground(Color.WHITE);
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
@@ -105,7 +112,10 @@ public class MyProfilePage extends UIBase {
         menuPanel.add(profileItem);
         menuPanel.add(Box.createVerticalGlue());
 
-        sidebar.add(menuPanel, BorderLayout.CENTER);
+        JPanel sidebarContent = new JPanel(new BorderLayout());
+        sidebarContent.setBackground(Color.WHITE);
+        sidebarContent.add(menuPanel, BorderLayout.NORTH);
+        sidebar.add(sidebarContent, BorderLayout.CENTER);
 
         JPanel backPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         backPanel.setBackground(Color.WHITE);
@@ -155,18 +165,13 @@ public class MyProfilePage extends UIBase {
 
         topContainer.add(userPanel, BorderLayout.NORTH);
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // Remove the header panel with title since we moved it to sidebar
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
                 BorderFactory.createEmptyBorder(15, 20, 15, 20)
         ));
-
-        JLabel title = new JLabel("My Profile");
-        title.setFont(new Font("Serif", Font.BOLD, 28));
-        title.setForeground(new Color(11, 61, 145));
-
-        headerPanel.add(title);
 
         topContainer.add(headerPanel, BorderLayout.SOUTH);
 
@@ -193,17 +198,17 @@ public class MyProfilePage extends UIBase {
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
-        formPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        formPanel.setBackground(new Color(230, 240, 250)); // Light blue background like the login page
+        formPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 210, 230)));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(10, 15, 10, 15); // Increased padding
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.3;
+        gbc.anchor = GridBagConstraints.WEST; // Align labels to the left
 
-        
         String username = "";
         String email = "";
 
@@ -220,8 +225,9 @@ public class MyProfilePage extends UIBase {
         gbc.weightx = 0.7;
         usernameField = new JTextField(username);
         usernameField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        usernameField.setPreferredSize(new Dimension(200, 30)); // Set fixed width
         usernameField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createLineBorder(new Color(180, 180, 180)),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         formPanel.add(usernameField, gbc);
@@ -237,8 +243,9 @@ public class MyProfilePage extends UIBase {
         gbc.weightx = 0.7;
         emailField = new JTextField(email);
         emailField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        emailField.setPreferredSize(new Dimension(200, 30)); // Set fixed width
         emailField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createLineBorder(new Color(180, 180, 180)),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         formPanel.add(emailField, gbc);
@@ -254,8 +261,9 @@ public class MyProfilePage extends UIBase {
         gbc.weightx = 0.7;
         currentPasswordField = new JPasswordField();
         currentPasswordField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        currentPasswordField.setPreferredSize(new Dimension(200, 30)); // Set fixed width
         currentPasswordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createLineBorder(new Color(180, 180, 180)),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         formPanel.add(currentPasswordField, gbc);
@@ -271,8 +279,9 @@ public class MyProfilePage extends UIBase {
         gbc.weightx = 0.7;
         newPasswordField = new JPasswordField();
         newPasswordField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        newPasswordField.setPreferredSize(new Dimension(200, 30)); // Set fixed width
         newPasswordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createLineBorder(new Color(180, 180, 180)),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         formPanel.add(newPasswordField, gbc);
@@ -288,17 +297,18 @@ public class MyProfilePage extends UIBase {
         gbc.weightx = 0.7;
         confirmPasswordField = new JPasswordField();
         confirmPasswordField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        confirmPasswordField.setPreferredSize(new Dimension(200, 30)); // Set fixed width
         confirmPasswordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+                BorderFactory.createLineBorder(new Color(180, 180, 180)),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
         formPanel.add(confirmPasswordField, gbc);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 20));
         buttonPanel.setBackground(Color.WHITE);
 
         JButton saveButton = new JButton("Save Changes");
-        saveButton.setBackground(new Color(11, 61, 145));
+        saveButton.setBackground(new Color(11, 61, 145)); // Dark blue from login button
         saveButton.setForeground(Color.WHITE);
         saveButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         saveButton.setFocusPainted(false);
@@ -325,12 +335,21 @@ public class MyProfilePage extends UIBase {
         wrapper.add(formPanel, BorderLayout.CENTER);
         wrapper.add(buttonPanel, BorderLayout.SOUTH);
 
-        JPanel centeredContent = new JPanel(new GridBagLayout());
+        // Set a maximum width for the form panel to avoid too much stretching
+        JPanel centeredContent = new JPanel(new BorderLayout());
         centeredContent.setBackground(Color.WHITE);
-        GridBagConstraints centerGbc = new GridBagConstraints();
-        centeredContent.add(wrapper, centerGbc);
 
+        // Container with padding for the form
+        JPanel paddedContainer = new JPanel(new BorderLayout());
+        paddedContainer.setBackground(Color.WHITE);
+        paddedContainer.setBorder(BorderFactory.createEmptyBorder(20, 100, 20, 100));
+        paddedContainer.add(wrapper, BorderLayout.CENTER);
+
+        centeredContent.add(paddedContainer, BorderLayout.CENTER);
         contentPanel.add(centeredContent, BorderLayout.CENTER);
+
+        // Add a light blue background to the entire content area
+        contentPanel.setBackground(new Color(240, 248, 255));  // Very light blue background
 
         return contentPanel;
     }
