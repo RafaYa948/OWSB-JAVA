@@ -1,0 +1,81 @@
+APPROVED PURCHASE ORDERS:
+--------------------------------------------------
+Order ID: PO002
+Requisition ID: REQ005
+Item Code: ITEM015
+Item Name: Apple MacBook
+Quantity: 3
+Unit Price: RM 1500.00
+Total Amount: RM 4500.00
+Order Date: 2025-05-16
+Supplier ID: SUP005
+Status: Approved
+--------------------------------------------------
+Order ID: PO004
+Requisition ID: REQ001
+Item Code: ITEM001
+Item Name: 
+Quantity: 9
+Unit Price: RM 35.00
+Total Amount: RM 315.00
+Order Date: 2025-05-18
+Supplier ID: SUP001
+Status: Approved
+--------------------------------------------------
+Order ID: PO005
+Requisition ID: REQ003
+Item Code: ITEM010
+Item Name: Xerox Machine
+Quantity: 15
+Unit Price: RM 50.75
+Total Amount: RM 300.00
+Order Date: 2025-05-19
+Supplier ID: SUP002
+Status: Approved
+--------------------------------------------------
+
+PAID PURCHASE ORDERS:
+--------------------------------------------------
+
+OUTSTANDING PAYMENTS:
+--------------------------------------------------
+Order ID: PO001
+Requisition ID: REQ002
+Item Code: ITEM005
+Item Name: Whiteboard
+Quantity: 5
+Unit Price: RM 120.50
+Total Amount: RM 602.50
+Order Date: 2025-05-15
+Supplier ID: SUP003
+Status: Pending
+--------------------------------------------------
+Order ID: PO003
+Requisition ID: REQ008
+Item Code: ITEM012
+Item Name: Water Dispenser
+Quantity: 8
+Unit Price: RM 75.25
+Total Amount: RM 602.00
+Order Date: 2025-05-17
+Supplier ID: SUP004
+Status: Pending
+--------------------------------------------------
+Order ID: PO008
+Requisition ID: REQ010
+Item Code: ITEM004
+Item Name: HP Printer
+Quantity: 10
+Unit Price: RM 60.25
+Total Amount: RM 602.50
+Order Date: 2025-05-22
+Supplier ID: SUP002
+Status: Pending
+--------------------------------------------------
+
+SUMMARY:
+--------------------------------------------------
+Approved POs: 3
+Paid POs: 0
+Outstanding Payments: RM 1807.00
+Total Expenditure: RM 5115.00

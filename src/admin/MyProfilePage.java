@@ -27,6 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 
+import finance.FinanceDashboardPage;
 import models.User;
 import database.DatabaseHelper;
 
@@ -405,11 +406,14 @@ public class MyProfilePage extends UIBase {
         }
     }
 
-    private void goBackToDashboard() {
-        dispose();
-        SwingUtilities.invokeLater(() -> {
-            DashboardPage dashboard = new DashboardPage(currentUser);
-            dashboard.setVisible(true);
-        });
+    protected void goBackToDashboard() {
+    dispose();
+    SwingUtilities.invokeLater(() -> {
+        if (User.ROLE_FINANCE_MANAGER.equals(currentUser.getRole())) {
+            new finance.FinanceDashboardPage(currentUser).setVisible(true);
+        } else {
+            new DashboardPage(currentUser).setVisible(true);
+        }
+    });
     }
 }

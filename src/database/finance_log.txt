@@ -1,0 +1,7 @@
+[2025-05-16T17:23:43.146457600] User Generalc marked PO PO005 as PAID - Amount: 15
+[2025-05-16T17:24:01.545542] User Generalc marked PO PO005 as PAID - Amount: 15
+[2025-05-16T18:10:14.317111800] Simulated payment for Order PO004 | Item:  | Amount: RM 315.00 | Supplier: SUP001 | User: Generalc
+[2025-05-16T18:10:37.389794500] User Generalc marked PO PO004 as PAID - Amount: 9
+[2025-05-16T18:10:47.449791800] Simulated payment for Order PO004 | Item:  | Amount: RM 315.00 | Supplier: SUP001 | User: Generalc
+[2025-05-16T18:48:21.744033200] User Generalc marked PO PO005 as PAID - Amount: 15
+[2025-05-16T18:48:28.713565200] Simulated payment for Order PO002 | Item: Apple MacBook | Amount: RM 4500.00 | Supplier: SUP005 | User: Generalc

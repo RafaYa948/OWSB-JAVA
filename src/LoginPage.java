@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import models.User;
+import finance.FinanceDashboardPage;
 
 public class LoginPage extends UIBase {
     public static final String APP_TITLE = "Automated Purchase Order Management System";
@@ -214,11 +215,10 @@ public class LoginPage extends UIBase {
                                 "Login Success",
                                 JOptionPane.INFORMATION_MESSAGE);
                     } else if (User.ROLE_FINANCE_MANAGER.equals(user.getRole())) {
-                        
-                        JOptionPane.showMessageDialog(this,
-                                "Welcome " + user.getUsername() + "!\nRole: Finance Manager\nThis dashboard is not yet implemented.",
-                                "Login Success",
-                                JOptionPane.INFORMATION_MESSAGE);
+                                 dispose();
+                                 SwingUtilities.invokeLater(() -> {
+                                   new finance.FinanceDashboardPage(user).setVisible(true);
+    });
                     } else if (User.ROLE_SALES_MANAGER.equals(user.getRole())) {
                         
                         JOptionPane.showMessageDialog(this,
