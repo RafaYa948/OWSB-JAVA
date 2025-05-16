@@ -1,0 +1,11 @@
+itemCode,itemName,quantity,location,lastUpdated,status
+ITEM001,Office Chair,25,Warehouse A,2025-05-14,In Stock
+ITEM002,Desk Lamp,8,Warehouse B,2025-05-14,Low Stock
+ITEM003,Filing Cabinet,0,Warehouse A,2025-05-14,Out of Stock
+ITEM004,Whiteboard,15,Warehouse C,2025-05-14,In Stock
+ITEM005,Printer Paper,5,Warehouse B,2025-05-14,Low Stock
+ITEM006,Ink Cartridge,30,Warehouse A,2025-05-14,In Stock
+ITEM007,USB Drive,0,Warehouse C,2025-05-14,Out of Stock
+ITEM008,Monitor Stand,12,Warehouse B,2025-05-14,In Stock
+ITEM009,Keyboard,3,Warehouse A,2025-05-14,Low Stock
+ITEM010,Mouse Pad,20,Warehouse C,2025-05-14,In Stock

@@ -69,16 +69,18 @@ public class PurchaseRequisitionsPage extends UIBase {
         tableModel.setRowCount(0);
         for (PurchaseRequisition requisition : requisitionsList) {
             if (requisition != null && (status == null || requisition.getStatus().equals(status))) {
-                
+
                 try {
                     Object[] rowData = {
-                        requisition.getRequisitionId(),
-                        requisition.getItemCode(),
-                        requisition.getItemName() != null ? requisition.getItemName() : "",
-                        Integer.valueOf(requisition.getQuantity()),
-                        requisition.getRequiredDate() != null ? requisition.getRequiredDate().format(displayDateFormatter) : "",
-                        requisition.getSalesManagerId(),
-                        requisition.getStatus()
+                            requisition.getRequisitionId(),
+                            requisition.getItemCode(),
+                            requisition.getItemName() != null ? requisition.getItemName() : "",
+                            Integer.valueOf(requisition.getQuantity()),
+                            requisition.getRequiredDate() != null ?
+                                    requisition.getRequiredDate().format(displayDateFormatter != null ? displayDateFormatter : DateTimeFormatter.ofPattern("dd-MM-yyyy")) :
+                                    "",
+                            requisition.getSalesManagerId(),
+                            requisition.getStatus()
                     };
                     tableModel.addRow(rowData);
                 } catch (Exception e) {
@@ -88,6 +90,8 @@ public class PurchaseRequisitionsPage extends UIBase {
             }
         }
     }
+
+
 
     @Override
     protected void initUI() {
@@ -118,7 +122,7 @@ public class PurchaseRequisitionsPage extends UIBase {
         logoPanel.setBackground(Color.WHITE);
         logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel placeholder = new JLabel("Our System Logo", SwingConstants.CENTER);
+        JLabel placeholder = new JLabel("OWSB", SwingConstants.CENTER);
         placeholder.setFont(new Font("Serif", Font.BOLD, 16));
         placeholder.setForeground(new Color(11, 61, 145));
         placeholder.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
@@ -197,7 +201,7 @@ public class PurchaseRequisitionsPage extends UIBase {
         
         String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
                            ? currentUser.getUsername()
-                           : "Username user";
+                           : "Admin";
         
         JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
