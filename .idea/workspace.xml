@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a0ca1a5-8685-4cee-824b-be0784583d72" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/sales/ManageSuppliersPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sales/CreateRequisitionPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sales/ManageItemsPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sales/SalesDataEntryPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sales/SalesSystemLogsPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sales/ViewPurchaseOrdersPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sales/ViewPurchaseRequisitionsPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/item.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/item.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/system_logs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/system_logs.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/DatabaseHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/DatabaseHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/item.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/item.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/system_logs.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/system_logs.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +48,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.LoginPage.executor": "Run",
-    "Application.SalesDashboardPage.executor": "Run",
+    "Application.SalesDashboardPage.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -67,7 +79,7 @@
       <updated>1747206204539</updated>
       <workItem from="1747206206293" duration="159000" />
       <workItem from="1747206464583" duration="1870000" />
-      <workItem from="1747479765634" duration="2464000" />
+      <workItem from="1747479765634" duration="4543000" />
     </task>
     <servers />
   </component>

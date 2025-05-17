@@ -16,3 +16,4 @@ ITEM016,Wireless Mouse,SUP002
 ITEM017,Keyboard,SUP002
 ITEM018,Monitor,SUP002
 ITEM019,Desk Phone,SUP006
+ITEM18,Mango,Mangoe
