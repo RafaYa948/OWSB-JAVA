@@ -34,11 +34,11 @@ public class WindowManager {
 
     private void applyScaling(Container container) {
         for (Component c : container.getComponents()) {
-            if (c instanceof JButton button) { 
+            if (c instanceof JButton button) {
                 scaleButton(button);
-            } else if (c instanceof JPanel panel) { 
+            } else if (c instanceof JPanel panel) {
                 applyScaling(panel);
-            } else if (c instanceof Container cont) { 
+            } else if (c instanceof Container cont) {
                 applyScaling(cont);
             }
         }
@@ -46,18 +46,18 @@ public class WindowManager {
 
     public void scaleButton(JButton b) {
         Font currentFont = b.getFont();
-        if (currentFont == null && b.getParent() != null) { 
+        if (currentFont == null && b.getParent() != null) {
             currentFont = b.getParent().getFont();
         }
-        if (currentFont == null) { 
+        if (currentFont == null) {
             currentFont = new Font("SansSerif", Font.PLAIN, 14);
         }
 
         Font scaledFont = currentFont.deriveFont((float)(currentFont.getSize() * this.scale * 1.2));
         b.setFont(scaledFont);
 
-        int targetWidth = 240; 
-        int targetHeight = 45; 
+        int targetWidth = 240;
+        int targetHeight = 45;
 
         int bw = (int)(targetWidth * this.scale);
         int bh = (int)(targetHeight * this.scale);
