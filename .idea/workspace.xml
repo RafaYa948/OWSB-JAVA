@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a0ca1a5-8685-4cee-824b-be0784583d72" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LoginPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LoginPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/UIBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/UIBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/WindowManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/WindowManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/user.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/user.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/database/user.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/user.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +66,7 @@
       <updated>1747206204539</updated>
       <workItem from="1747206206293" duration="159000" />
       <workItem from="1747206464583" duration="1870000" />
-      <workItem from="1747479765634" duration="1547000" />
+      <workItem from="1747479765634" duration="2248000" />
     </task>
     <servers />
   </component>

@@ -1,16 +1,30 @@
 package sales;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 import models.User;
 import admin.UIBase;
 
-public class SalesDashboardPage extends admin.UIBase {
-
-    private final User currentUser;
-
+public class SalesDashboardPage extends UIBase {
+    
+    private User currentUser;
+    
+    public SalesDashboardPage() {
+        super("Sales Dashboard");
+    }
+    
     public SalesDashboardPage(User user) {
         super("Sales Dashboard");
         this.currentUser = user;
@@ -24,168 +38,365 @@ public class SalesDashboardPage extends admin.UIBase {
         JPanel navPanel = createSidebar();
         root.add(navPanel, BorderLayout.WEST);
 
-        JPanel topPanel = createTopBar();
-        root.add(topPanel, BorderLayout.NORTH);
+        JPanel topContainer = createTopBar();
+        root.add(topContainer, BorderLayout.NORTH);
 
-        JPanel content = createGridContent();
+        JPanel content = createContentPanel();
         root.add(content, BorderLayout.CENTER);
 
-        getContentPane().removeAll();
-        getContentPane().add(root);
-        getContentPane().revalidate();
-        getContentPane().repaint();
+        setContentPane(root);
     }
 
     private JPanel createSidebar() {
         JPanel navPanel = new JPanel(new BorderLayout());
-        navPanel.setPreferredSize(new Dimension(200, getHeight()));
+        navPanel.setPreferredSize(new Dimension(200, APP_WINDOW_HEIGHT));
         navPanel.setBackground(Color.WHITE);
         navPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.LIGHT_GRAY));
-
+        
         JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(Color.WHITE);
         logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JLabel logo = new JLabel("Sales Dept", SwingConstants.CENTER);
-        logo.setFont(new Font("Serif", Font.BOLD, 16));
-        logo.setForeground(primaryColor);
-        logoPanel.add(logo, BorderLayout.CENTER);
-
+        JLabel placeholder = new JLabel("OWSB", SwingConstants.CENTER);
+        placeholder.setFont(new Font("Serif", Font.BOLD, 16));
+        placeholder.setForeground(new Color(11, 61, 145));
+        placeholder.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        logoPanel.add(placeholder, BorderLayout.CENTER);
+        
         navPanel.add(logoPanel, BorderLayout.NORTH);
-
+        
+        JPanel menuPanel = new JPanel();
+        menuPanel.setBackground(Color.WHITE);
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        
+        JPanel dashboardPanel = new JPanel(new BorderLayout());
+        dashboardPanel.setBackground(new Color(240, 240, 240));
+        dashboardPanel.setMaximumSize(new Dimension(200, 50));
+        dashboardPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        dashboardPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        JLabel dashLabel = new JLabel("Dashboard");
+        dashLabel.setFont(new Font("Serif", Font.BOLD, 16));
+        dashboardPanel.add(dashLabel, BorderLayout.CENTER);
+        
+        menuPanel.add(dashboardPanel);
+        
+        dashboardPanel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent evt) {
+                dashboardPanel.setBackground(new Color(230, 230, 230));
+            }
+            
+            public void mouseExited(MouseEvent evt) {
+                dashboardPanel.setBackground(new Color(240, 240, 240));
+            }
+        });
+        
+        menuPanel.add(Box.createVerticalGlue());
+        navPanel.add(menuPanel, BorderLayout.CENTER);
+        
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         logoutPanel.setBackground(Color.WHITE);
         logoutPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
-
+        
         JButton logoutBtn = new JButton("Logout");
         logoutBtn.setBackground(new Color(120, 120, 120));
         logoutBtn.setForeground(Color.WHITE);
         logoutBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
         logoutBtn.setPreferredSize(new Dimension(120, 35));
+        logoutBtn.setBorder(BorderFactory.createCompoundBorder(
+            new LineBorder(new Color(120, 120, 120), 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        logoutBtn.setFocusPainted(false);
         logoutBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
+        
         logoutBtn.addActionListener(e -> {
             int response = JOptionPane.showConfirmDialog(
-                    this,
-                    "Are you sure you want to log out?",
-                    "Logout Confirmation",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE
+                SalesDashboardPage.this,
+                "Are you sure you want to log out?",
+                "Logout Confirmation",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
             );
             if (response == JOptionPane.YES_OPTION) {
                 dispose();
                 System.exit(0);
             }
         });
-
+        
         logoutPanel.add(logoutBtn);
         navPanel.add(logoutPanel, BorderLayout.SOUTH);
-
+        
         return navPanel;
     }
 
     private JPanel createTopBar() {
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(Color.WHITE);
-
+        JPanel topContainer = new JPanel(new BorderLayout());
+        topContainer.setBackground(Color.WHITE);
+        
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         userPanel.setBackground(new Color(180, 180, 180));
         userPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 20));
-
+        
         JLabel bell = new JLabel("🔔");
         bell.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        bell.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(bell);
-
+        
         String displayName = (currentUser != null && currentUser.getUsername() != null && !currentUser.getUsername().isEmpty())
-                ? currentUser.getUsername()
-                : "User";
+                           ? currentUser.getUsername()
+                           : "Username user";
+        
         JLabel userLabel = new JLabel(displayName + " ▾");
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+        
+        topContainer.add(userPanel, BorderLayout.NORTH);
+        
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+            BorderFactory.createEmptyBorder(15, 20, 15, 20)
+        ));
+        
+        JLabel title = new JLabel("Sales Manager Dashboard");
+        title.setFont(new Font("Serif", Font.BOLD, 28));
+        title.setForeground(new Color(11, 61, 145));
+        
+        headerPanel.add(title);
+        topContainer.add(headerPanel, BorderLayout.SOUTH);
+
         userLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                dispose();
-                new admin.MyProfilePage(currentUser).setVisible(true);
+                navigateToMyProfile();
             }
         });
 
-        topPanel.add(userPanel, BorderLayout.NORTH);
-
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
-
-        JLabel title = new JLabel("Sales Dashboard");
-        title.setFont(headerFont);
-        title.setForeground(primaryColor);
-        headerPanel.add(title);
-
-        topPanel.add(headerPanel, BorderLayout.SOUTH);
-
-        return topPanel;
+        return topContainer;
     }
 
-    private JPanel createGridContent() {
-        JPanel contentPanel = new JPanel(new GridLayout(2, 3, 20, 20));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        contentPanel.setBackground(Color.WHITE);
+    private JPanel createContentPanel() {
+        JPanel contentWrapper = new JPanel(new BorderLayout());
+        contentWrapper.setBackground(Color.WHITE);
+        
+        JPanel content = new JPanel(new GridBagLayout());
+        content.setBackground(Color.WHITE);
+        content.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        
+        String[] topRowCards = {
+            "Manage<br>Suppliers",
+            "Manage<br>Items",
+            "View<br>Purchase<br>Requisitions",
+            "View<br>Purchase<br>Orders"
+        };
 
-        contentPanel.add(createCard("View\nSales\nInventory", () -> {
+        for (int i = 0; i < topRowCards.length; i++) {
+            gbc.gridx = i;
+            gbc.gridy = 0;
+            JPanel card = createCard(topRowCards[i]);
 
-        }));
+            if (i == 0) {
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        navigateToManageSuppliers();
+                    }
+                });
+            }
 
-        contentPanel.add(createCard("Create\nPurchase\nRequisition", () -> {
+            if (i == 1) {
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        navigateToManageItems();
+                    }
+                });
+            }
 
-        }));
+            if (i == 2) {
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        navigateToPurchaseRequisitions();
+                    }
+                });
+            }
 
-        contentPanel.add(createCard("View\nPurchase\nRequisitions", () -> {
+            if (i == 3) {
+                card.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        navigateToPurchaseOrders();
+                    }
+                });
+            }
 
-        }));
+            content.add(card, gbc);
+        }
 
-        contentPanel.add(createCard("View\nSales\nHistory", () -> {
+        String[] bottomRowCards = {
+            "Sales Data<br>Entry",
+            "Create<br>Purchase<br>Requisition",
+            "View<br>System<br>Logs"
+        };
+        
+        JPanel bottomRow = new JPanel();
+        bottomRow.setBackground(Color.WHITE);
+        
+        JPanel card1 = createCard(bottomRowCards[0]);
+        card1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToSalesDataEntry();
+            }
+        });
+        JPanel card2 = createCard(bottomRowCards[1]);
+        card2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToCreateRequisition();
+            }
+        });
+        JPanel card3 = createCard(bottomRowCards[2]);
+        card3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                navigateToSystemLogs();
+            }
+        });
 
-        }));
+        bottomRow.setLayout(new BoxLayout(bottomRow, BoxLayout.X_AXIS));
 
-        contentPanel.add(createCard("Generate\nSales\nReports", () -> {
-
-        }));
-
-        contentPanel.add(createCard("View\nSystem\nLogs", () -> {
-
-        }));
-
-        return contentPanel;
+        bottomRow.add(Box.createHorizontalGlue());
+        bottomRow.add(card1);
+        bottomRow.add(Box.createRigidArea(new Dimension(20, 0)));
+        bottomRow.add(card2);
+        bottomRow.add(Box.createRigidArea(new Dimension(20, 0)));
+        bottomRow.add(card3);
+        bottomRow.add(Box.createHorizontalGlue());
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 4;
+        content.add(bottomRow, gbc);
+        
+        contentWrapper.add(content, BorderLayout.CENTER);
+        return contentWrapper;
+    }
+    
+    private void navigateToManageSuppliers() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement ManageSuppliersPage
+            //ManageSuppliersPage manageSuppliersPage = new ManageSuppliersPage(currentUser);
+            //manageSuppliersPage.setVisible(true);
+        });
+        dispose();
+    }
+    
+    private void navigateToManageItems() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement ManageItemsPage for sales
+            //ManageItemsPage manageItemsPage = new ManageItemsPage(currentUser);
+            //manageItemsPage.setVisible(true);
+        });
+        dispose();
     }
 
-    private JPanel createCard(String labelText, Runnable onClick) {
-        JPanel card = new JPanel(new BorderLayout());
+    private void navigateToPurchaseRequisitions() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement PurchaseRequisitionsPage for sales
+            //PurchaseRequisitionsPage requisitionsPage = new PurchaseRequisitionsPage(currentUser);
+            //requisitionsPage.setVisible(true);
+        });
+        dispose();
+    }
+
+    private void navigateToPurchaseOrders() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement PurchaseOrdersPage for sales
+            //PurchaseOrdersPage ordersPage = new PurchaseOrdersPage(currentUser);
+            //ordersPage.setVisible(true);
+        });
+        dispose();
+    }
+
+    private void navigateToSalesDataEntry() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement SalesDataEntryPage
+            //SalesDataEntryPage page = new SalesDataEntryPage(currentUser);
+            //page.setVisible(true);
+        });
+        dispose();
+    }
+
+    private void navigateToCreateRequisition() {
+        setVisible(false);
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement CreateRequisitionPage
+            //CreateRequisitionPage page = new CreateRequisitionPage(currentUser);
+            //page.setVisible(true);
+        });
+        dispose();
+    }
+
+    private void navigateToSystemLogs() {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            // TODO: Implement SystemLogsPage for sales
+            //SystemLogsPage page = new SystemLogsPage(currentUser);
+            //page.setVisible(true);
+        });
+    }
+
+    private void navigateToMyProfile() {
+        dispose();
+        SwingUtilities.invokeLater(() -> {
+            admin.MyProfilePage profilePage = new admin.MyProfilePage(currentUser);
+            profilePage.setVisible(true);
+        });
+    }
+
+    private JPanel createCard(final String text) {
+        final JPanel card = new JPanel(new BorderLayout());
         card.setBackground(new Color(235, 245, 255));
-        card.setBorder(BorderFactory.createLineBorder(primaryColor));
+        card.setBorder(new LineBorder(new Color(11, 61, 145), 1));
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        JLabel label = new JLabel("<html><div style='text-align:center;'>" + labelText.replace("\n", "<br>") + "</div></html>");
+        
+        JLabel label = new JLabel("<html><div style='text-align:center;'>" + text + "</div></html>");
         label.setFont(new Font("Serif", Font.BOLD, 16));
         label.setHorizontalAlignment(SwingConstants.CENTER);
-        label.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-
+        label.setBorder(BorderFactory.createEmptyBorder(15, 10, 15, 10));
+        
         card.add(label, BorderLayout.CENTER);
-
+        
         card.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
+            public void mouseEntered(MouseEvent evt) {
                 card.setBackground(new Color(220, 235, 250));
             }
-
-            public void mouseExited(MouseEvent e) {
+            
+            public void mouseExited(MouseEvent evt) {
                 card.setBackground(new Color(235, 245, 255));
             }
-
-            public void mouseClicked(MouseEvent e) {
-                onClick.run();
-            }
         });
-
+        
         return card;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new SalesDashboardPage());
     }
 }

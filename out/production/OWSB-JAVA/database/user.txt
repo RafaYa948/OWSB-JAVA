@@ -2,3 +2,4 @@ userId,username,password,email,role
 ADMN001,a,a,admin@gmail.com,ADMN
 INV001,Hamzad,Hydra720!,hama@mail.cpm,ADMN
 U001,Generalc,!2345678,j.cuambe@gmail.com,FIN
+U002,s,s,sha@gmail.com,SAL
