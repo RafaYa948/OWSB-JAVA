@@ -1,4 +1,3 @@
-// sales/ViewPurchaseRequisitionsPage.java
 package sales;
 
 import admin.UIBase;
@@ -30,10 +29,28 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
     private List<PurchaseRequisition> requisitionsList;
     private final DateTimeFormatter displayDateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-
     public ViewPurchaseRequisitionsPage(User user) {
         super("View Purchase Requisitions");
         this.currentUser = user;
+        requisitionsList = new ArrayList<>();
+        initTableModel();
+    }
+
+    private void initTableModel() {
+        String[] columnNames = {"PR ID", "Item Code", "Item Name", "Quantity", "Required Date", "Status"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+            @Override
+            public Class<?> getColumnClass(int column) {
+                if (column == 3) {
+                    return Integer.class;
+                }
+                return String.class;
+            }
+        };
     }
 
     @Override
@@ -52,7 +69,16 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
             if (requisitionsList == null) {
                 requisitionsList = new ArrayList<>();
             }
-            filterRequisitions(null); // Load all initially
+
+            System.out.println("Loaded " + requisitionsList.size() + " requisitions");
+
+            if (currentUser != null) {
+                System.out.println("Current user: " + currentUser.getUsername() + ", ID: " + currentUser.getUserId() + ", Role: " + currentUser.getRole());
+            } else {
+                System.out.println("Current user is null");
+            }
+
+            filterRequisitions(null);
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -72,38 +98,81 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
     }
 
     private void filterRequisitions(String status) {
+        if (tableModel == null) {
+            initTableModel();
+        }
+
         tableModel.setRowCount(0);
+
+        if (requisitionsList == null) {
+            return;
+        }
+
+        System.out.println("Loading all requisitions (ignoring filter) - list size: " + requisitionsList.size());
+
+        // Show all requisitions regardless of status
         for (PurchaseRequisition requisition : requisitionsList) {
-            // Sales Manager should only see their own requisitions
-            if (requisition != null && requisition.getSalesManagerId().equals(currentUser.getUserId())) {
-                if (status == null || requisition.getStatus().equals(status)) {
-                    try {
-                        Object[] rowData = {
-                                requisition.getRequisitionId(),
-                                requisition.getItemCode(),
-                                requisition.getItemName() != null ? requisition.getItemName() : "",
-                                Integer.valueOf(requisition.getQuantity()),
-                                requisition.getRequiredDate() != null ?
-                                        requisition.getRequiredDate().format(displayDateFormatter) :
-                                        "",
-                                requisition.getStatus() // Only status for Sales Manager view
-                        };
-                        tableModel.addRow(rowData);
-                    } catch (Exception e) {
-                        System.out.println("Warning: Error formatting row data for requisition " + requisition.getRequisitionId());
-                        e.printStackTrace();
+            if (requisition != null) {
+                try {
+                    // Get item name if not set
+                    String itemName = requisition.getItemName();
+                    if (itemName == null || itemName.isEmpty()) {
+                        try {
+                            DatabaseHelper db = new DatabaseHelper();
+                            models.Item item = db.getItemByCode(requisition.getItemCode());
+                            if (item != null) {
+                                itemName = item.getItemName();
+                            } else {
+                                itemName = ""; // Default if item not found
+                            }
+                        } catch (Exception e) {
+                            itemName = ""; // Default on error
+                        }
                     }
+
+                    // Format date safely
+                    String dateStr = "";
+                    LocalDate requiredDate = requisition.getRequiredDate();
+                    if (requiredDate != null) {
+                        try {
+                            dateStr = requiredDate.format(displayDateFormatter);
+                        } catch (Exception e) {
+                            // If formatting fails, use toString() as fallback
+                            dateStr = requiredDate.toString();
+                        }
+                    }
+
+                    Object[] rowData = {
+                            requisition.getRequisitionId(),
+                            requisition.getItemCode(),
+                            itemName,
+                            requisition.getQuantity(),
+                            dateStr,
+                            requisition.getStatus()
+                    };
+                    tableModel.addRow(rowData);
+
+                    System.out.println("Added requisition: " + requisition.getRequisitionId());
+                } catch (Exception e) {
+                    System.out.println("Error adding row for requisition: " +
+                            (requisition.getRequisitionId() != null ? requisition.getRequisitionId() : "unknown") +
+                            " - " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
+
+        System.out.println("Table now has " + tableModel.getRowCount() + " rows");
+
+        // Force table to refresh
+        if (requisitionsTable != null) {
+            requisitionsTable.revalidate();
+            requisitionsTable.repaint();
+        }
     }
-
-
 
     @Override
     protected void initUI() {
-        requisitionsList = new ArrayList<>();
-
         JPanel root = new JPanel(new BorderLayout());
         root.setBackground(Color.WHITE);
 
@@ -214,6 +283,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         userLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         userLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         userPanel.add(userLabel);
+
         userLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -221,7 +291,6 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
                 new admin.MyProfilePage(currentUser).setVisible(true);
             }
         });
-
 
         topContainer.add(userPanel, BorderLayout.NORTH);
 
@@ -262,21 +331,12 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        String[] columnNames = {"PR ID", "Item Code", "Item Name", "Quantity", "Required Date", "Status"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Read-only access for Sales Manager
-            }
-            @Override
-            public Class<?> getColumnClass(int column) {
-                if (column == 3) { // Quantity
-                    return Integer.class;
-                }
-                return String.class;
-            }
-        };
+        // Make sure we have a table model
+        if (tableModel == null) {
+            initTableModel();
+        }
 
+        // Create table with the model
         requisitionsTable = new JTable(tableModel);
         requisitionsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         requisitionsTable.getTableHeader().setBackground(new Color(240, 240, 240));
@@ -284,7 +344,15 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         requisitionsTable.setRowHeight(30);
         requisitionsTable.setGridColor(Color.LIGHT_GRAY);
 
-        // Optional: Add cell renderer for status coloring as in admin view
+        // Set column widths to ensure visibility
+        requisitionsTable.getColumnModel().getColumn(0).setPreferredWidth(80);  // PR ID
+        requisitionsTable.getColumnModel().getColumn(1).setPreferredWidth(80);  // Item Code
+        requisitionsTable.getColumnModel().getColumn(2).setPreferredWidth(150); // Item Name
+        requisitionsTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Quantity
+        requisitionsTable.getColumnModel().getColumn(4).setPreferredWidth(120); // Required Date
+        requisitionsTable.getColumnModel().getColumn(5).setPreferredWidth(80);  // Status
+
+        // Add color coding for different status values
         requisitionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -292,69 +360,40 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
 
                 if (!isSelected) {
                     try {
-                        String status = (String) table.getValueAt(row, 5); // Status column index
-                        if (PurchaseRequisition.STATUS_APPROVED.equals(status)) {
-                            c.setBackground(new Color(230, 255, 230)); // Light green
-                        } else if (PurchaseRequisition.STATUS_REJECTED.equals(status)) {
-                            c.setBackground(new Color(255, 230, 230)); // Light red
-                        } else { // Pending
-                            c.setBackground(new Color(255, 255, 230)); // Light yellow
+                        if (column == 5) { // Status column
+                            String status = value != null ? value.toString() : "";
+                            if ("Approved".equals(status)) {
+                                c.setBackground(new Color(230, 255, 230)); // Light green
+                                c.setForeground(new Color(0, 100, 0));     // Dark green
+                            } else if ("Rejected".equals(status)) {
+                                c.setBackground(new Color(255, 230, 230)); // Light red
+                                c.setForeground(new Color(180, 0, 0));     // Dark red
+                            } else { // Pending
+                                c.setBackground(new Color(255, 255, 230)); // Light yellow
+                                c.setForeground(new Color(180, 100, 0));   // Orange/brown
+                            }
+                        } else {
+                            c.setBackground(Color.WHITE);
+                            c.setForeground(Color.BLACK);
                         }
                     } catch (Exception e) {
                         c.setBackground(Color.WHITE);
+                        c.setForeground(Color.BLACK);
                     }
                 }
                 return c;
             }
         });
 
-
+        // Put the table in a scroll pane
         JScrollPane scrollPane = new JScrollPane(requisitionsTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        scrollPane.setPreferredSize(new Dimension(600, 400)); // Set preferred size
         contentPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        buttonsPanel.setBackground(Color.WHITE);
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-
-        JButton filterBtn = new JButton("Filter by: All Status ▼");
-        styleButton(filterBtn);
-        createFilterPopup(filterBtn);
-        buttonsPanel.add(filterBtn);
-
-        // No "Add", "Edit", "Delete" buttons as per UI design
-
-        contentPanel.add(buttonsPanel, BorderLayout.SOUTH);
+        // No filter button or button panel
 
         return contentPanel;
-    }
-
-
-    private void createFilterPopup(JButton filterBtn) {
-        JPopupMenu filterMenu = new JPopupMenu();
-        filterMenu.setBackground(Color.WHITE);
-
-        String[] statuses = {
-                "All Status",
-                PurchaseRequisition.STATUS_PENDING,
-                PurchaseRequisition.STATUS_APPROVED,
-                PurchaseRequisition.STATUS_REJECTED
-        };
-
-        for (String status : statuses) {
-            JMenuItem item = new JMenuItem(status);
-            item.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            item.setBackground(Color.WHITE);
-            item.addActionListener(e -> {
-                filterRequisitions(status.equals("All Status") ? null : status);
-                filterBtn.setText("Filter by: " + status + " ▼");
-            });
-            filterMenu.add(item);
-        }
-
-        filterBtn.addActionListener(e -> {
-            filterMenu.show(filterBtn, 0, filterBtn.getHeight());
-        });
     }
 
 
@@ -365,7 +404,7 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        button.setPreferredSize(new Dimension(180, 40)); // Adjusted size
+        button.setPreferredSize(new Dimension(180, 40));
     }
 
     private void goBackToDashboard() {
@@ -375,8 +414,11 @@ public class ViewPurchaseRequisitionsPage extends UIBase {
             dashboard.setVisible(true);
         });
     }
+
     private void logSystemAction(String action, String details) {
         try {
+            if (currentUser == null) return;
+
             DatabaseHelper db = new DatabaseHelper();
             SystemLog log = new SystemLog(
                     "LOG" + System.currentTimeMillis(),

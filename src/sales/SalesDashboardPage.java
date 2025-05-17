@@ -1,4 +1,3 @@
-// sales/SalesDashboardPage.java
 package sales;
 
 import java.awt.BorderLayout;
