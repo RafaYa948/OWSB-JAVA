@@ -40,20 +40,19 @@ public class SalesDataEntryPage extends UIBase {
 
     public void loadSalesEntries() {
         try {
-            DatabaseHelper dbHelper = new DatabaseHelper();
-            // Assuming there's a method in DatabaseHelper to get sales entries, potentially filtered by sales manager
-            // For now, this method does not exist in the provided DatabaseHelper.
-            // I will assume a method `getAllSalesEntries()` exists and filter by the current user's ID.
-            // If a specific file for sales entries exists (e.g., sales_entry.txt), that would be used.
-            List<SalesEntry> allEntries = new ArrayList<>(); // Replace with actual loading
-            // Filter by current user if needed, based on assignment details Sales Managers enter their own sales data.
-            // The provided sales_entry.txt seems to have salesManagerId, but DatabaseHelper doesn't have a method to read it.
-            // Assuming the user has sales_entry.txt and DatabaseHelper needs to be updated to read it.
+            // Check if currentUser is null
+            if (currentUser == null) {
+                System.out.println("Warning: Current user is null in loadSalesEntries");
+                return; // Don't try to load entries if user is null
+            }
 
-            // Placeholder: Simulating loading data if DatabaseHelper doesn't support it yet
+            DatabaseHelper dbHelper = new DatabaseHelper();
+            // In a real implementation, we would load entries from the database
+            List<SalesEntry> allEntries = new ArrayList<>();
+
+            // Create some sample entries for demonstration
             allEntries.add(new SalesEntry("SALE001", LocalDate.now(), "ITEM001", "Office Chair", 5, "Furniture", 199.99, 999.95, currentUser.getUserId()));
             allEntries.add(new SalesEntry("SALE002", LocalDate.now().minusDays(1), "ITEM002", "Desk Lamp", 10, "Electronics", 49.99, 499.90, currentUser.getUserId()));
-
 
             updateTable(allEntries);
 
@@ -67,24 +66,35 @@ public class SalesDataEntryPage extends UIBase {
     }
 
     private void updateTable(List<SalesEntry> entries) {
+        if (tableModel == null) {
+            // Initialize the table model if it hasn't been created yet
+            String[] columnNames = {"Date", "Item ID", "Item Name", "Quantity", "Category", "Price per unit", "Total price"};
+            tableModel = new DefaultTableModel(columnNames, 0);
+        }
+
         tableModel.setRowCount(0);
+
+        if (currentUser == null || entries == null) {
+            return; // Don't try to update the table if user or entries are null
+        }
+
         for (SalesEntry entry : entries) {
-            if (entry != null && entry.getSalesManagerId().equals(currentUser.getUserId())) { // Filter by current user
-                // Assuming `Item Name`, `Category`, `Price per unit`, `Total price` are available in SalesEntry model or can be fetched
+            if (entry != null && entry.getSalesManagerId() != null &&
+                    entry.getSalesManagerId().equals(currentUser.getUserId())) {
+
                 Object[] rowData = {
                         entry.getDate(),
                         entry.getItemId(),
-                        entry.getItemName() != null ? entry.getItemName() : "", // Item Name (Placeholder if not in model)
+                        entry.getItemName() != null ? entry.getItemName() : "",
                         entry.getQuantity(),
-                        entry.getCategory() != null ? entry.getCategory() : "", // Category (Placeholder if not in model)
-                        entry.getPricePerUnit(), // Price per unit (Placeholder if not in model)
-                        entry.getTotalPrice() // Total price (Placeholder if not in model)
+                        entry.getCategory() != null ? entry.getCategory() : "",
+                        entry.getPricePerUnit(),
+                        entry.getTotalPrice()
                 };
                 tableModel.addRow(rowData);
             }
         }
     }
-
 
     @Override
     protected void initUI() {

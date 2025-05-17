@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="0a0ca1a5-8685-4cee-824b-be0784583d72" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/supplier.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/OWSB-JAVA/database/supplier.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/database/supplier.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/database/supplier.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/SalesDashboardPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/sales/ViewPurchaseRequisitionsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/ViewPurchaseRequisitionsPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/sales/SalesDataEntryPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sales/SalesDataEntryPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +36,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.LoginPage.executor": "Run",
+    "Application.LoginPage.executor": "Debug",
     "Application.RegisterPage.executor": "Run",
     "Application.SalesDashboardPage.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
