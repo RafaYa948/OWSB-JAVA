@@ -255,7 +255,8 @@ public class SalesDataEntryPage extends UIBase {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JPanel formPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        // Use GridLayout for better alignment of form fields
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createTitledBorder("Enter Sales Data"));
 
@@ -270,20 +271,25 @@ public class SalesDataEntryPage extends UIBase {
         formPanel.add(new JLabel("Sales Quantity:"));
         formPanel.add(quantityField);
 
-        contentPanel.add(formPanel, BorderLayout.NORTH);
+        // Add some padding around the form panel
+        JPanel formContainer = new JPanel(new BorderLayout());
+        formContainer.setBackground(Color.WHITE);
+        formContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        formContainer.add(formPanel, BorderLayout.CENTER);
 
+        contentPanel.add(formContainer, BorderLayout.NORTH);
 
+        // Rest of the method remains the same...
         String[] columnNames = {"Date", "Item ID", "Item Name", "Quantity", "Category", "Price per unit", "Total price"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Allow editing if needed, based on assignment requirement for Edit
-                return true; // Assuming editable for demo
+                return true;
             }
             @Override
             public Class<?> getColumnClass(int column) {
-                if (column == 3 || column == 5 || column == 6) { // Quantity, Price per unit, Total price
-                    return Object.class; // Use Object for flexibility
+                if (column == 3 || column == 5 || column == 6) {
+                    return Object.class;
                 }
                 return String.class;
             }
@@ -299,7 +305,6 @@ public class SalesDataEntryPage extends UIBase {
         JScrollPane scrollPane = new JScrollPane(salesTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
-
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonsPanel.setBackground(Color.WHITE);

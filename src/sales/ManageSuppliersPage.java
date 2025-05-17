@@ -11,7 +11,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -277,9 +280,8 @@ public class ManageSuppliersPage extends UIBase {
                     JOptionPane.YES_NO_OPTION
             );
             if (choice == JOptionPane.YES_OPTION) {
-                setVisible(false);
-                // TODO: Implement AddSupplierPage
-                //SwingUtilities.invokeLater(() -> new AddSupplierPage(currentUser, this).setVisible(true));
+                // Handle the add supplier action
+                handleAddSupplier();
             }
         });
         buttonsPanel.add(addButton);
@@ -301,9 +303,8 @@ public class ManageSuppliersPage extends UIBase {
                 DatabaseHelper dbHelper = new DatabaseHelper();
                 Supplier supplier = dbHelper.getSupplierById(supplierId);
                 if (supplier != null) {
-                    setVisible(false);
-                    // TODO: Implement EditSupplierPage
-                    //SwingUtilities.invokeLater(() -> new EditSupplierPage(currentUser, this, supplier).setVisible(true));
+                    // Handle the edit supplier action
+                    handleEditSupplier(supplier);
                 }
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
@@ -345,6 +346,7 @@ public class ManageSuppliersPage extends UIBase {
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                     loadSuppliers();
+                    logSystemAction(SystemLog.ACTION_DELETE, "Deleted supplier: " + supplierName);
                 } catch (IOException ex) {
                     JOptionPane.showMessageDialog(this,
                             "Error deleting supplier: " + ex.getMessage(),
@@ -381,6 +383,220 @@ public class ManageSuppliersPage extends UIBase {
         }
 
         filterBtn.addActionListener(e -> filterMenu.show(filterBtn, 0, filterBtn.getHeight()));
+    }
+
+    // Fixed method to handle adding a supplier with the correct parameters
+    private void handleAddSupplier() {
+        // Create a form panel with fields for supplier details
+        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JTextField supplierNameField = new JTextField();
+        JTextField contactPersonField = new JTextField();
+        JTextField contactNumberField = new JTextField();
+        JTextField emailField = new JTextField();
+        JTextField addressField = new JTextField(); // Added address field
+        JTextField suppliedItemsField = new JTextField();
+        JTextField lastOrderDateField = new JTextField();
+
+        JComboBox<String> statusComboBox = new JComboBox<>(new String[]{
+                Supplier.STATUS_ACTIVE,
+                Supplier.STATUS_INACTIVE
+        });
+
+        formPanel.add(new JLabel("Supplier Name:"));
+        formPanel.add(supplierNameField);
+        formPanel.add(new JLabel("Contact Person:"));
+        formPanel.add(contactPersonField);
+        formPanel.add(new JLabel("Contact Number:"));
+        formPanel.add(contactNumberField);
+        formPanel.add(new JLabel("Email:"));
+        formPanel.add(emailField);
+        formPanel.add(new JLabel("Address:")); // Added address label
+        formPanel.add(addressField); // Added address field
+        formPanel.add(new JLabel("Supplied Items:"));
+        formPanel.add(suppliedItemsField);
+        formPanel.add(new JLabel("Last Order Date (YYYY-MM-DD):"));
+        formPanel.add(lastOrderDateField);
+        formPanel.add(new JLabel("Status:"));
+        formPanel.add(statusComboBox);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                formPanel,
+                "Add Supplier",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            // Validate input
+            if (supplierNameField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Supplier Name is required.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate date format if provided
+            LocalDate lastOrderDate = null;
+            String lastOrderDateStr = lastOrderDateField.getText().trim();
+            if (!lastOrderDateStr.isEmpty()) {
+                try {
+                    lastOrderDate = LocalDate.parse(lastOrderDateStr);
+                } catch (DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid date format. Use YYYY-MM-DD.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Generate a unique supplier ID
+            String supplierId = "SUP" + System.currentTimeMillis();
+
+            // Create the supplier object with correct parameter count
+            Supplier newSupplier = new Supplier(
+                    supplierId,
+                    supplierNameField.getText().trim(),
+                    contactPersonField.getText().trim(),
+                    contactNumberField.getText().trim(),
+                    emailField.getText().trim(),
+                    addressField.getText().trim(), // Added address
+                    suppliedItemsField.getText().trim(),
+                    lastOrderDate,
+                    (String) statusComboBox.getSelectedItem()
+            );
+
+            // Add the supplier to the database
+            try {
+                DatabaseHelper dbHelper = new DatabaseHelper();
+                dbHelper.addSupplier(newSupplier);
+
+                // Reload suppliers to refresh the table
+                loadSuppliers();
+
+                JOptionPane.showMessageDialog(this,
+                        "Supplier added successfully.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                logSystemAction(SystemLog.ACTION_CREATE, "Added new supplier: " + newSupplier.getSupplierName());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error adding supplier: " + ex.getMessage(),
+                        "Database Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    // Fixed method to handle editing a supplier with the correct parameters
+    private void handleEditSupplier(Supplier supplier) {
+        // Create a form panel with fields pre-filled with supplier details
+        JPanel formPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JTextField supplierNameField = new JTextField(supplier.getSupplierName());
+        JTextField contactPersonField = new JTextField(supplier.getContactPerson());
+        JTextField contactNumberField = new JTextField(supplier.getContactNumber());
+        JTextField emailField = new JTextField(supplier.getEmail());
+        JTextField addressField = new JTextField(supplier.getAddress()); // Added address field
+        JTextField suppliedItemsField = new JTextField(supplier.getSuppliedItems());
+
+        String lastOrderDateStr = supplier.getLastOrderDate() != null
+                ? supplier.getLastOrderDate().format(DateTimeFormatter.ISO_LOCAL_DATE)
+                : "";
+
+        JTextField lastOrderDateField = new JTextField(lastOrderDateStr);
+
+        JComboBox<String> statusComboBox = new JComboBox<>(new String[]{
+                Supplier.STATUS_ACTIVE,
+                Supplier.STATUS_INACTIVE
+        });
+        statusComboBox.setSelectedItem(supplier.getStatus());
+
+        formPanel.add(new JLabel("Supplier Name:"));
+        formPanel.add(supplierNameField);
+        formPanel.add(new JLabel("Contact Person:"));
+        formPanel.add(contactPersonField);
+        formPanel.add(new JLabel("Contact Number:"));
+        formPanel.add(contactNumberField);
+        formPanel.add(new JLabel("Email:"));
+        formPanel.add(emailField);
+        formPanel.add(new JLabel("Address:")); // Added address label
+        formPanel.add(addressField); // Added address field
+        formPanel.add(new JLabel("Supplied Items:"));
+        formPanel.add(suppliedItemsField);
+        formPanel.add(new JLabel("Last Order Date (YYYY-MM-DD):"));
+        formPanel.add(lastOrderDateField);
+        formPanel.add(new JLabel("Status:"));
+        formPanel.add(statusComboBox);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                formPanel,
+                "Edit Supplier",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            // Validate input
+            if (supplierNameField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Supplier Name is required.",
+                        "Input Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validate date format if provided
+            LocalDate lastOrderDate = null;
+            String newLastOrderDateStr = lastOrderDateField.getText().trim();
+            if (!newLastOrderDateStr.isEmpty()) {
+                try {
+                    lastOrderDate = LocalDate.parse(newLastOrderDateStr);
+                } catch (DateTimeParseException e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid date format. Use YYYY-MM-DD.",
+                            "Input Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Update the supplier object
+            supplier.setSupplierName(supplierNameField.getText().trim());
+            supplier.setContactPerson(contactPersonField.getText().trim());
+            supplier.setContactNumber(contactNumberField.getText().trim());
+            supplier.setEmail(emailField.getText().trim());
+            supplier.setAddress(addressField.getText().trim()); // Added address update
+            supplier.setSuppliedItems(suppliedItemsField.getText().trim());
+            supplier.setLastOrderDate(lastOrderDate);
+            supplier.setStatus((String) statusComboBox.getSelectedItem());
+
+            // Update the supplier in the database
+            try {
+                DatabaseHelper dbHelper = new DatabaseHelper();
+                dbHelper.updateSupplier(supplier);
+
+                // Reload suppliers to refresh the table
+                loadSuppliers();
+
+                JOptionPane.showMessageDialog(this,
+                        "Supplier updated successfully.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                logSystemAction(SystemLog.ACTION_UPDATE, "Updated supplier: " + supplier.getSupplierName());
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error updating supplier: " + ex.getMessage(),
+                        "Database Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private void styleButton(JButton button) {
