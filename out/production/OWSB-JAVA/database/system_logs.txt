@@ -9,3 +9,9 @@ LOG007,U001,admin,View,Viewed system logs,2025-05-14 11:00:00,ADMN
 LOG008,U003,sales,Create,Created requisition REQ001,2025-05-14 11:15:00,SAL
 LOG009,U004,inventory,Update,Updated stock levels,2025-05-14 11:30:00,INV
 LOG010,U001,admin,Logout,User logged out,2025-05-14 12:00:00,ADMN
+LOG1747298891255,U001,Generalc,Update,Modified quantity for PO008 to 12,2025-05-15 16:48:11,FIN
+LOG1747368642383,U001,Generalc,Update,Modified quantity for PO008 to 11,2025-05-16 12:10:42,FIN
+LOG1747392479491,U001,Generalc,Update,Modified quantity for PO008 to 10,2025-05-16 18:47:59,FIN
+LOG1747392509642,U001,Generalc,View,Simulated payment for PO PO002,2025-05-16 18:48:29,FIN
+LOG1747392701196,U001,Generalc,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-16 18:51:41,FIN
+LOG1747392728841,U001,Generalc,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-16 18:52:08,FIN

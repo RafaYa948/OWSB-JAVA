@@ -1,0 +1,11 @@
+supplierId,supplierName,contactPerson,contactNumber,email,address,suppliedItems,lastOrderDate,status
+SUP001,Office Solutions Inc,John Smith,+1-555-123-4567,contact@officesolutions.com,123 Business Ave, New York, NY,Office Furniture,2025-05-10,Active
+SUP002,Tech Supplies Ltd,Sarah Johnson,+1-555-234-5678,sales@techsupplies.com,456 Tech Blvd, San Francisco, CA,Computers & Electronics,2025-05-12,Active
+SUP003,Workspace Essentials,Michael Brown,+1-555-345-6789,orders@workspaceessentials.com,789 Workspace Rd, Chicago, IL,Office Accessories,2025-05-14,Active
+SUP004,Kitchen & Office Depot,Emily Davis,+1-555-456-7890,info@kitchenofficedepot.com,101 Supply St, Austin, TX,Kitchen & Break Room,2025-05-15,Active
+SUP005,Premium Tech,David Wilson,+1-555-567-8901,sales@premiumtech.com,202 Electronics Way, Seattle, WA,Premium Electronics,2025-05-16,Active
+SUP006,Communication Systems,Jessica Miller,+1-555-678-9012,support@commsystems.com,303 Network Dr, Boston, MA,Communication Equipment,2025-05-17,Active
+SUP007,Furniture Warehouse,Robert Jones,+1-555-789-0123,orders@furniturewarehouse.com,404 Furniture Lane, Atlanta, GA,Office Furniture,2025-05-18,Inactive
+SUP008,Stationery Plus,Jennifer Taylor,+1-555-890-1234,jennifer@stationeryplus.com,505 Paper Rd, Denver, CO,Paper & Stationery,2025-05-19,Active
+SUP009,Ergonomic Solutions,Thomas Anderson,+1-555-901-2345,sales@ergonomicsolutions.com,606 Comfort Ave, Portland, OR,Ergonomic Furniture,2025-05-20,Active
+SUP010,Global Equipment,Michelle Lee,+1-555-012-3456,orders@globalequip.com,707 Industrial Pkwy, Phoenix, AZ,Heavy Equipment,2025-05-21,Active

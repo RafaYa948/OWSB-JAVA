@@ -1,0 +1,6 @@
+categoryId,categoryName,description
+CAT001,Furniture,Office furniture and fixtures
+CAT002,Electronics,Computers, printers, and other electronic devices
+CAT003,Office Supplies,Stationery, paper, and other consumables
+CAT004,Appliances,Kitchen and office appliances
+CAT005,Communication,Phones and communication equipment
