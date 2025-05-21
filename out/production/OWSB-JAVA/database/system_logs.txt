@@ -17,5 +17,3 @@ LOG1747392701196,U001,Generalc,ViewlogS,Opened FinanceGenerateReportsPage,2025-0
 LOG1747392728841,U001,Generalc,ViewlogS,Opened FinanceGenerateReportsPage,2025-05-16 18:52:08,FIN
 LOG1747483916626,U002,s,Create,Added new item: ITEM18,2025-05-17 20:11:56,SAL
 LOG1747483920073,U002,s,Update,Updated item: ITEM18,2025-05-17 20:12:00,SAL
-LOG1747494472489,U002,s,Update,Edited sales entry for item: ITEM002,2025-05-17 23:07:52,SAL
-LOG1747494505950,U002,s,Create,Created new sales entry for item: ITEM002,2025-05-17 23:08:25,SAL
