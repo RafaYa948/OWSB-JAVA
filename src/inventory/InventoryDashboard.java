@@ -9,33 +9,49 @@ import java.awt.*;
 import java.util.List;
 
 public class InventoryDashboard extends JFrame {
-    private final String username;
-    private final InventoryManager inventoryManager;
+
+    private String username;
+    private InventoryManager inventoryManager;
+    private JPanel contentArea; // Dynamic center panel
 
     public InventoryDashboard(String username, InventoryManager inventoryManager) {
         this.username = username;
         this.inventoryManager = inventoryManager;
 
-        setTitle("Inventory Manager - " + username);
-        setSize(1000, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setTitle("Inventory Manager Dashboard - " + username);
+        setSize(900, 600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        createHeader();
-        createSidebar();
-        createMainPanel();
-
+        initComponents();
         setVisible(true);
     }
 
-    private void createHeader() {
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        header.add(new JLabel("Role: Inventory Manager"));
-        header.add(new JLabel("User: " + username));
-        add(header, BorderLayout.NORTH);
-    }
+    private void initComponents() {
+        JPanel mainPanel = new JPanel(new BorderLayout());
 
-    private void createSidebar() {
+        // Header
+        JPanel header = new JPanel(new BorderLayout());
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        left.add(new JLabel("Role: Inventory Manager"));
+        left.add(Box.createHorizontalStrut(20));
+        left.add(new JLabel("User: " + username));
+
+        JButton logoutBtn = new JButton("Logout");
+        logoutBtn.addActionListener(e -> {
+            dispose(); // Close dashboard
+            // Optionally go back to login or main menu if needed
+        });
+
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        right.add(logoutBtn);
+
+        header.add(left, BorderLayout.WEST);
+        header.add(right, BorderLayout.EAST);
+
+        mainPanel.add(header, BorderLayout.NORTH);
+
+        // Sidebar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setPreferredSize(new Dimension(200, 0));
@@ -76,26 +92,26 @@ public class InventoryDashboard extends JFrame {
             }
         }
 
-        add(sidebar, BorderLayout.WEST);
-    }
+        mainPanel.add(sidebar, BorderLayout.WEST);
 
-    private void createMainPanel() {
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.add(new JLabel("Welcome to Inventory Manager", SwingConstants.CENTER));
-        add(mainPanel, BorderLayout.CENTER);
+        // Content Area
+        contentArea = new JPanel(new BorderLayout());
+        contentArea.add(new JLabel("<html><h2>Welcome, " + username + "</h2><p>Select an action from the sidebar.</p></html>", SwingConstants.CENTER), BorderLayout.CENTER);
+        mainPanel.add(contentArea, BorderLayout.CENTER);
+
+        setContentPane(mainPanel);
     }
 
     private void updateMainPanel(JPanel panel) {
-        getContentPane().remove(1);  // Remove current center panel
-        add(panel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
+        contentArea.removeAll();
+        contentArea.add(panel, BorderLayout.CENTER);
+        contentArea.revalidate();
+        contentArea.repaint();
     }
 
     private void showCurrentStock() {
         JPanel stockPanel = new JPanel(new BorderLayout());
 
-        // Filter panel
         JPanel filterPanel = new JPanel();
         filterPanel.add(new JLabel("Filter By:"));
         JCheckBox lowStockCheck = new JCheckBox("Low Stock");
@@ -123,14 +139,12 @@ public class InventoryDashboard extends JFrame {
 
         stockPanel.add(filterPanel, BorderLayout.NORTH);
         stockPanel.add(new JScrollPane(table), BorderLayout.CENTER);
-
         updateMainPanel(stockPanel);
     }
 
     private void showPOUpdate() {
         JPanel poPanel = new JPanel(new BorderLayout());
 
-        // Dummy PO data - replace with real data from inventoryManager.getPendingPurchaseOrders()
         String[] columns = {"PO ID", "Item Code", "Item Name", "Ordered Qty", "Received Qty"};
         Object[][] data = {
             {"PO001", "ITM001", "Flour", 100, 0},
@@ -151,7 +165,7 @@ public class InventoryDashboard extends JFrame {
 
                 try {
                     String input = JOptionPane.showInputDialog(this, "Enter received quantity:");
-                    if (input == null) return; // Cancel pressed
+                    if (input == null) return;
                     receivedQty = Integer.parseInt(input);
                     if (receivedQty <= 0) throw new NumberFormatException();
 
@@ -171,7 +185,6 @@ public class InventoryDashboard extends JFrame {
 
         poPanel.add(scrollPane, BorderLayout.CENTER);
         poPanel.add(updateBtn, BorderLayout.SOUTH);
-
         updateMainPanel(poPanel);
     }
 
@@ -186,7 +199,7 @@ public class InventoryDashboard extends JFrame {
 
         JButton updateBtn = new JButton("Update Stock");
 
-        JLabel statusLabel = new JLabel(" ");  // For feedback
+        JLabel statusLabel = new JLabel(" ");
 
         updateBtn.addActionListener(e -> {
             String code = itemCodeField.getText().trim();
@@ -223,71 +236,50 @@ public class InventoryDashboard extends JFrame {
         JPanel reportPanel = new JPanel(new BorderLayout());
 
         String[] columns = {"Item Code", "Item Name", "Supplier ID", "Quantity"};
-
-        Object[][] data = getAllStockData();
+        Object[][] data = {
+            {"ITM001", "Flour", "SUP001", 50},
+            {"ITM002", "Sugar", "SUP002", 8},
+            {"ITM003", "Rice", "SUP003", 30}
+        };
 
         JTable table = new JTable(data, columns);
         JScrollPane scrollPane = new JScrollPane(table);
 
         reportPanel.add(scrollPane, BorderLayout.CENTER);
-
         updateMainPanel(reportPanel);
-    }
-
-    private Object[][] getAllStockData() {
-        // Replace with real inventoryManager data retrieval
-        return new Object[][]{
-            {"ITM001", "Flour", "SUP001", 50},
-            {"ITM002", "Sugar", "SUP002", 8},
-            {"ITM003", "Rice", "SUP003", 30}
-        };
     }
 
     private void showStockHistory() {
         JPanel historyPanel = new JPanel(new BorderLayout());
 
         String[] columns = {"Date", "Item Code", "Item Name", "Quantity Change", "Remarks"};
-
-        Object[][] data = getStockHistoryData();
+        Object[][] data = {
+            {"2025-05-20", "ITM001", "Flour", +50, "Initial stock"},
+            {"2025-05-21", "ITM002", "Sugar", -5, "Sold to customer"},
+            {"2025-05-21", "ITM003", "Rice", +30, "PO received"}
+        };
 
         JTable table = new JTable(data, columns);
         JScrollPane scrollPane = new JScrollPane(table);
 
         historyPanel.add(scrollPane, BorderLayout.CENTER);
-
         updateMainPanel(historyPanel);
-    }
-
-    private Object[][] getStockHistoryData() {
-        // Replace with real inventoryManager data retrieval
-        return new Object[][]{
-            {"2025-05-20", "ITM001", "Flour", +50, "Initial stock"},
-            {"2025-05-21", "ITM002", "Sugar", -5, "Sold to customer"},
-            {"2025-05-21", "ITM003", "Rice", +30, "PO received"}
-        };
     }
 
     private void showSystemLogs() {
         JPanel logsPanel = new JPanel(new BorderLayout());
 
         String[] columns = {"Timestamp", "User", "Action", "Details"};
-
-        Object[][] data = getSystemLogsData();
+        Object[][] data = {
+            {"2025-05-21 09:00", "inventoryManager1", "Login", "Successful login"},
+            {"2025-05-21 09:15", "inventoryManager1", "Stock Update", "Added 50 units of ITM001"},
+            {"2025-05-21 09:30", "inventoryManager2", "Manual Adjustment", "Reduced 5 units of ITM002"}
+        };
 
         JTable table = new JTable(data, columns);
         JScrollPane scrollPane = new JScrollPane(table);
 
         logsPanel.add(scrollPane, BorderLayout.CENTER);
-
         updateMainPanel(logsPanel);
-    }
-
-    private Object[][] getSystemLogsData() {
-        // Replace with actual logManager data retrieval
-        return new Object[][]{
-            {"2025-05-21 09:00", "inventoryManager1", "Login", "Successful login"},
-            {"2025-05-21 09:15", "inventoryManager1", "Stock Update", "Added 50 units of ITM001"},
-            {"2025-05-21 09:30", "inventoryManager2", "Manual Adjustment", "Reduced 5 units of ITM002"},
-        };
     }
 }
